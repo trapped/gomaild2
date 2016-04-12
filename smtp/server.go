@@ -23,6 +23,7 @@ func (s *Server) Start() {
 		client := &Client{
 			Conn: c,
 			Rdr:  bufio.NewReadWriter(bufio.NewReader(c), bufio.NewWriter(c)),
+			Data: make(map[string]interface{}),
 		}
 		go accept(client)
 	}

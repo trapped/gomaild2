@@ -16,6 +16,7 @@ const (
 	Unavailable                      = 421
 	CommandSyntaxError               = 500
 	ArgumentSyntaxError              = 501
+	AlreadyIdentified                = 503
 	CommandNotImplemented            = 504
 )
 
@@ -44,6 +45,7 @@ type Client struct {
 	Conn  net.Conn
 	State SessionState
 	Rdr   *bufio.ReadWriter
+	Data  map[string]interface{}
 }
 
 func (c *Client) Send(r Reply) {
