@@ -1,0 +1,23 @@
+package smtp
+
+import (
+  "strings"
+  . "trapped/gomaild2/smtp/structs"
+  {{range $k, $v := .Packages}}
+  "trapped/gomaild2/smtp/commands/{{$k}}"
+  {{end}}
+)
+
+func Process(client *Client, cmd Command) Reply {
+  switch strings.ToLower(cmd.Verb) {
+  {{range $k, $v := .Packages}}
+  case "{{$k}}":
+    return {{$k}}.Process(client, cmd)
+  {{end}}
+  default:
+    return Reply{
+      Result: CommandNotImplemented,
+      Message: "command not implemented",
+    }
+  }
+}
