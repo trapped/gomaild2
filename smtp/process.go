@@ -1,5 +1,7 @@
 package smtp
 
+//WARNING: Automatically generated file. DO NOT EDIT!
+
 import (
 	. "github.com/trapped/gomaild2/smtp/structs"
 	"strings"
