@@ -2,21 +2,17 @@ package helo
 
 import (
 	. "github.com/trapped/gomaild2/smtp/structs"
-	"regexp"
 )
 
-var domain_regex *regexp.Regexp = regexp.MustCompile("^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])$")
-var ip_regex *regexp.Regexp = regexp.MustCompile("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$")
-
 func identify(c *Client, cmd Command) Reply {
-	valid := domain_regex.MatchString(cmd.Args) || ip_regex.MatchString(cmd.Args)
+	valid := RxDomain.MatchString(cmd.Args)
 	//TODO: start blacklist check
 	if valid {
 		c.Data["identifier"] = interface{}(cmd.Args)
 		c.State = Identified
 		return Reply{
 			Result:  Ok,
-			Message: "domain validated",
+			Message: "domain validated, welcome " + cmd.Args,
 		}
 	} else {
 		return Reply{
@@ -28,7 +24,7 @@ func identify(c *Client, cmd Command) Reply {
 
 func alreadyidentified(c *Client, cmd Command) Reply {
 	return Reply{
-		Result:  AlreadyIdentified,
+		Result:  BadSequence,
 		Message: "already identified",
 	}
 }
