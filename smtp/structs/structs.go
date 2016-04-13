@@ -19,6 +19,7 @@ const (
 	Ready                 StatusCode = 220
 	Closing                          = 221
 	Ok                               = 250
+	StartSending                     = 354
 	Unavailable                      = 421
 	CommandSyntaxError               = 500
 	ArgumentSyntaxError              = 501
@@ -63,16 +64,16 @@ func (c *Client) Send(r Reply) {
 	}
 }
 
-func (c *Client) Receive() Command {
+func (c *Client) Receive() (Command, error) {
 	str, err := c.Rdr.ReadString('\n')
 	str = strings.TrimSpace(str)
 	if err != nil {
-		c.Conn.Close()
 		c.State = Disconnected
+		return Command{}, err
 	}
 	split := strings.Split(str, " ")
 	return Command{
 		Verb: split[0],
 		Args: strings.Join(split[1:], " "),
-	}
+	}, nil
 }

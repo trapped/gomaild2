@@ -36,7 +36,11 @@ func accept(c *Client) {
 		if c.State == Disconnected {
 			break
 		}
-		c.Send(Process(c, c.Receive()))
+		cmd, err := c.Receive()
+		if err != nil {
+			break
+		}
+		c.Send(Process(c, cmd))
 	}
 	c.Conn.Close()
 }

@@ -6,6 +6,8 @@ import (
 	. "github.com/trapped/gomaild2/smtp/structs"
 	"strings"
 
+	"github.com/trapped/gomaild2/smtp/commands/data"
+
 	"github.com/trapped/gomaild2/smtp/commands/helo"
 
 	"github.com/trapped/gomaild2/smtp/commands/mail"
@@ -17,6 +19,9 @@ import (
 
 func Process(client *Client, cmd Command) Reply {
 	switch strings.ToLower(cmd.Verb) {
+
+	case "data":
+		return data.Process(client, cmd)
 
 	case "helo":
 		return helo.Process(client, cmd)
