@@ -2,9 +2,9 @@ package smtp
 
 import (
   "strings"
-  . "trapped/gomaild2/smtp/structs"
+  . "github.com/trapped/gomaild2/smtp/structs"
   {{range $k, $v := .Packages}}
-  "trapped/gomaild2/smtp/commands/{{$k}}"
+  "github.com/trapped/gomaild2/smtp/commands/{{$k}}"
   {{end}}
 )
 

@@ -1,12 +1,12 @@
 package smtp
 
 import (
+	. "github.com/trapped/gomaild2/smtp/structs"
 	"strings"
-	. "trapped/gomaild2/smtp/structs"
 
-	"trapped/gomaild2/smtp/commands/helo"
+	"github.com/trapped/gomaild2/smtp/commands/helo"
 
-	"trapped/gomaild2/smtp/commands/quit"
+	"github.com/trapped/gomaild2/smtp/commands/quit"
 )
 
 func Process(client *Client, cmd Command) Reply {

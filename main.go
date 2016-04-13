@@ -1,7 +1,7 @@
 package main
 
 import (
-	"trapped/gomaild2/smtp"
+	"github.com/trapped/gomaild2/smtp"
 )
 
 func main() {

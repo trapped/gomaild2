@@ -1,7 +1,7 @@
 package quit
 
 import (
-	. "trapped/gomaild2/smtp/structs"
+	. "github.com/trapped/gomaild2/smtp/structs"
 )
 
 func Process(c *Client, cmd Command) Reply {

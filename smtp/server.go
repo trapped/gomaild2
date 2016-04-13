@@ -2,8 +2,8 @@ package smtp
 
 import (
 	"bufio"
+	. "github.com/trapped/gomaild2/smtp/structs"
 	"net"
-	. "trapped/gomaild2/smtp/structs"
 )
 
 type Server struct {
