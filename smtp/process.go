@@ -12,6 +12,8 @@ import (
 
 	"github.com/trapped/gomaild2/smtp/commands/mail"
 
+	"github.com/trapped/gomaild2/smtp/commands/noop"
+
 	"github.com/trapped/gomaild2/smtp/commands/quit"
 
 	"github.com/trapped/gomaild2/smtp/commands/rcpt"
@@ -28,6 +30,9 @@ func Process(client *Client, cmd Command) Reply {
 
 	case "mail":
 		return mail.Process(client, cmd)
+
+	case "noop":
+		return noop.Process(client, cmd)
 
 	case "quit":
 		return quit.Process(client, cmd)
