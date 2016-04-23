@@ -55,8 +55,21 @@ type Client struct {
 	Data  map[string]interface{}
 }
 
+func FormatReply(r Reply) string {
+	lines := strings.Split(r.Message, "\n")
+	for i, line := range lines {
+		line = strings.TrimSpace(line)
+		separator := "-"
+		if i >= len(lines)-1 {
+			separator = " "
+		}
+		lines[i] = strconv.Itoa(int(r.Result)) + separator + line
+	}
+	return strings.Join(lines, "\r\n")
+}
+
 func (c *Client) Send(r Reply) {
-	_, err := c.Rdr.WriteString(strconv.Itoa(int(r.Result)) + " " + r.Message + "\r\n")
+	_, err := c.Rdr.WriteString(FormatReply(r) + "\r\n")
 	c.Rdr.Flush()
 	if err != nil {
 		c.Conn.Close()

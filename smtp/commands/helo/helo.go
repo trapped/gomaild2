@@ -4,7 +4,7 @@ import (
 	. "github.com/trapped/gomaild2/smtp/structs"
 )
 
-func identify(c *Client, cmd Command) Reply {
+func Identify(c *Client, cmd Command) Reply {
 	valid := RxDomain.MatchString(cmd.Args)
 	//TODO: start blacklist check
 	if valid {
@@ -22,7 +22,7 @@ func identify(c *Client, cmd Command) Reply {
 	}
 }
 
-func alreadyidentified(c *Client, cmd Command) Reply {
+func AlreadyIdentified(c *Client, cmd Command) Reply {
 	return Reply{
 		Result:  BadSequence,
 		Message: "already identified",
@@ -31,8 +31,8 @@ func alreadyidentified(c *Client, cmd Command) Reply {
 
 func Process(c *Client, cmd Command) Reply {
 	if c.State >= Identified {
-		return alreadyidentified(c, cmd)
+		return AlreadyIdentified(c, cmd)
 	} else {
-		return identify(c, cmd)
+		return Identify(c, cmd)
 	}
 }

@@ -7,6 +7,7 @@ import (
 )
 
 func queueMessage(sender string, recipients []string, body string) {
+	//TODO: Actually queue message
 	fmt.Printf("Sender: %v\nRecipients: %v\nBody:\n\t%v\n", sender,
 		strings.Join(recipients, ", "), strings.Join(strings.Split(body, "\n"), "\n\t"))
 }

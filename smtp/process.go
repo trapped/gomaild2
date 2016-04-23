@@ -8,6 +8,8 @@ import (
 
 	"github.com/trapped/gomaild2/smtp/commands/data"
 
+	"github.com/trapped/gomaild2/smtp/commands/ehlo"
+
 	"github.com/trapped/gomaild2/smtp/commands/helo"
 
 	"github.com/trapped/gomaild2/smtp/commands/mail"
@@ -24,6 +26,9 @@ func Process(client *Client, cmd Command) Reply {
 
 	case "data":
 		return data.Process(client, cmd)
+
+	case "ehlo":
+		return ehlo.Process(client, cmd)
 
 	case "helo":
 		return helo.Process(client, cmd)
