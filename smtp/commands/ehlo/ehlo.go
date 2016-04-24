@@ -16,7 +16,9 @@ func Process(c *Client, cmd Command) Reply {
 		return helo.AlreadyIdentified(c, cmd)
 	} else {
 		reply := helo.Identify(c, cmd)
-		reply.Message = strings.Join(append(GetExtensions(), reply.Message), "\n")
+		if IsSuccess(reply) {
+			reply.Message = strings.Join(append(GetExtensions(), reply.Message), "\n")
+		}
 		return reply
 	}
 }
