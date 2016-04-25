@@ -6,7 +6,7 @@ Requires [`gengen`](https://github.com/trapped/gengen) to generate some files (`
 ##Status
 
 - [ ] DB interface to actually store emails
-- [ ] YAML config
+- [x] YAML config
 - [x] Logging (logfmt)
 - [ ] SMTP server
   - [x] `HELO`

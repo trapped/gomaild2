@@ -3,6 +3,7 @@ package smtp
 import (
 	"bufio"
 	log "github.com/sirupsen/logrus"
+	config "github.com/spf13/viper"
 	. "github.com/trapped/gomaild2/smtp/structs"
 	. "github.com/trapped/gomaild2/structs"
 	"net"
@@ -37,7 +38,7 @@ func (s *Server) Start() {
 }
 
 func accept(c *Client) {
-	c.Send(Reply{Result: Ready, Message: "ready"})
+	c.Send(Reply{Result: Ready, Message: config.GetString("server.name") + " gomaild2 ESMTP ready"})
 	c.State = Connected
 	log.WithFields(log.Fields{
 		"id":   c.ID,

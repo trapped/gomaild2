@@ -1,0 +1,9 @@
+log:
+  path: gomaild2.log
+
+server:
+  name: localhost
+  smtp:
+    address: 0.0.0.0
+    ports:
+      - 25
