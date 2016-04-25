@@ -3,6 +3,7 @@ package smtp
 //WARNING: Automatically generated file. DO NOT EDIT!
 
 import (
+	log "github.com/sirupsen/logrus"
 	. "github.com/trapped/gomaild2/smtp/structs"
 	"strings"
 
@@ -21,34 +22,55 @@ import (
 	"github.com/trapped/gomaild2/smtp/commands/rcpt"
 )
 
-func Process(client *Client, cmd Command) Reply {
+func Process(c *Client, cmd Command) (reply Reply) {
 	switch strings.ToLower(cmd.Verb) {
 
 	case "data":
-		return data.Process(client, cmd)
+		reply = data.Process(c, cmd)
+		break
 
 	case "ehlo":
-		return ehlo.Process(client, cmd)
+		reply = ehlo.Process(c, cmd)
+		break
 
 	case "helo":
-		return helo.Process(client, cmd)
+		reply = helo.Process(c, cmd)
+		break
 
 	case "mail":
-		return mail.Process(client, cmd)
+		reply = mail.Process(c, cmd)
+		break
 
 	case "noop":
-		return noop.Process(client, cmd)
+		reply = noop.Process(c, cmd)
+		break
 
 	case "quit":
-		return quit.Process(client, cmd)
+		reply = quit.Process(c, cmd)
+		break
 
 	case "rcpt":
-		return rcpt.Process(client, cmd)
+		reply = rcpt.Process(c, cmd)
+		break
 
 	default:
-		return Reply{
+		reply = Reply{
 			Result:  CommandNotImplemented,
 			Message: "command not implemented",
 		}
+		break
 	}
+	log.WithFields(log.Fields{
+		"id":     c.ID,
+		"cmd":    cmd.Verb,
+		"args":   cmd.Args,
+		"result": reply.Result,
+		"reply":  LastLine(reply),
+	}).Info([]string{
+		"Success",           //200-299
+		"Success",           //300-399
+		"Temporary failure", //400-499
+		"Permanent failure", //500-599
+	}[(reply.Result/100)-2])
+	return
 }

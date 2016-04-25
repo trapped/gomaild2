@@ -51,6 +51,7 @@ type Reply struct {
 
 type Client struct {
 	Conn  net.Conn
+	ID    string
 	State SessionState
 	Rdr   *bufio.ReadWriter
 	Data  map[string]interface{}
@@ -75,6 +76,11 @@ func FormatReply(r Reply) string {
 		lines[i] = strconv.Itoa(int(r.Result)) + separator + line
 	}
 	return strings.Join(lines, "\r\n")
+}
+
+func LastLine(r Reply) string {
+	s := strings.Split(r.Message, "\n")
+	return strings.TrimSpace(s[len(s)-1])
 }
 
 func (c *Client) Send(r Reply) {

@@ -5,21 +5,37 @@ package smtp
 import (
   "strings"
   . "github.com/trapped/gomaild2/smtp/structs"
+  log "github.com/sirupsen/logrus"
   {{range $k, $v := .Packages}}
   "github.com/trapped/gomaild2/smtp/commands/{{$k}}"
   {{end}}
 )
 
-func Process(client *Client, cmd Command) Reply {
+func Process(c *Client, cmd Command) (reply Reply) {
   switch strings.ToLower(cmd.Verb) {
   {{range $k, $v := .Packages}}
   case "{{$k}}":
-    return {{$k}}.Process(client, cmd)
+    reply = {{$k}}.Process(c, cmd)
+    break
   {{end}}
   default:
-    return Reply{
+    reply = Reply{
       Result: CommandNotImplemented,
       Message: "command not implemented",
     }
+    break
   }
+  log.WithFields(log.Fields{
+    "id":   c.ID,
+    "cmd":  cmd.Verb,
+    "args": cmd.Args,
+    "result": reply.Result,
+    "reply": LastLine(reply),
+  }).Info([]string{
+    "Success",           //200-299
+    "Success",           //300-399
+    "Temporary failure", //400-499
+    "Permanent failure", //500-599
+  }[(reply.Result / 100)-2])
+  return
 }
