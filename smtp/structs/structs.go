@@ -17,15 +17,20 @@ var (
 type StatusCode int
 
 const (
-	Ready                 StatusCode = 220
-	Closing                          = 221
-	Ok                               = 250
-	StartSending                     = 354
-	Unavailable                      = 421
-	CommandSyntaxError               = 500
-	ArgumentSyntaxError              = 501
-	BadSequence                      = 503
-	CommandNotImplemented            = 504
+	Ignore                   StatusCode = -1
+	Ready                               = 220
+	Closing                             = 221
+	AuthenticationSuccessful            = 235
+	Ok                                  = 250
+	StartSending                        = 354
+	Unavailable                         = 421
+	LocalError                          = 451
+	CommandSyntaxError                  = 500
+	ArgumentSyntaxError                 = 501
+	BadSequence                         = 503
+	CommandNotImplemented               = 504
+	AuthenticationRequired              = 530
+	TransactionFailed                   = 554
 )
 
 type SessionState int
@@ -38,6 +43,12 @@ const (
 	ReceivingBody    //after DATA
 	Disconnected
 )
+
+//packages should append() during init()
+var Extensions []string = []string{
+	"PIPELINING",
+	"8BITMIME",
+}
 
 type Command struct {
 	Verb string
@@ -55,6 +66,35 @@ type Client struct {
 	State SessionState
 	Rdr   *bufio.ReadWriter
 	Data  map[string]interface{}
+}
+
+func (c *Client) Set(key string, value interface{}) {
+	c.Data[key] = value
+}
+
+func (c *Client) Get(key string) interface{} {
+	return c.Data[key]
+}
+
+func (c *Client) GetBool(key string) bool {
+	if v, ok := c.Data[key]; ok {
+		return v.(bool)
+	}
+	return false
+}
+
+func (c *Client) GetString(key string) string {
+	if v, ok := c.Data[key]; ok {
+		return v.(string)
+	}
+	return ""
+}
+
+func (c *Client) GetStringSlice(key string) []string {
+	if v, ok := c.Data[key]; ok {
+		return v.([]string)
+	}
+	return make([]string, 0)
 }
 
 func IsSuccess(r Reply) bool {
@@ -84,6 +124,9 @@ func LastLine(r Reply) string {
 }
 
 func (c *Client) Send(r Reply) {
+	if r.Result == Ignore {
+		return
+	}
 	_, err := c.Rdr.WriteString(FormatReply(r) + "\r\n")
 	c.Rdr.Flush()
 	if err != nil {

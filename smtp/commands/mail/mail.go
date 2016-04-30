@@ -29,6 +29,13 @@ func parseFrom(args string) (string, error) {
 }
 
 func Process(c *Client, cmd Command) Reply {
+	//TODO: abstract require_auth in process.go.tmpl
+	if c.GetBool("require_auth") && !c.GetBool("authenticated") {
+		return Reply{
+			Result:  AuthenticationRequired,
+			Message: "authentication required",
+		}
+	}
 	if c.State != Identified {
 		return Reply{
 			Result:  BadSequence,
@@ -43,7 +50,7 @@ func Process(c *Client, cmd Command) Reply {
 		}
 	}
 	//TODO: check blacklist
-	c.Data["sender"] = interface{}(sender)
+	c.Set("sender", sender)
 	c.State = ReceivingHeaders
 	return Reply{
 		Result:  Ok,

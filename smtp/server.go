@@ -10,16 +10,20 @@ import (
 )
 
 type Server struct {
-	Addr string
-	Port string
+	Addr        string
+	Port        string
+	RequireAuth bool
+	Outbound    bool
 }
 
 //go:generate gengen -d ./commands/ -t process.go.tmpl -o process.go
 
 func (s *Server) Start() {
 	log.WithFields(log.Fields{
-		"addr": s.Addr,
-		"port": s.Port,
+		"addr":         s.Addr,
+		"port":         s.Port,
+		"outbound":     s.Outbound,
+		"require_auth": s.RequireAuth,
 	}).Info("Starting SMTP server")
 	l, err := net.Listen("tcp", s.Addr+":"+s.Port)
 	if err != nil {
@@ -33,6 +37,8 @@ func (s *Server) Start() {
 			Data: make(map[string]interface{}),
 			ID:   SessionID(12),
 		}
+		client.Set("outbound", s.Outbound)
+		client.Set("require_auth", s.RequireAuth)
 		go accept(client)
 	}
 }

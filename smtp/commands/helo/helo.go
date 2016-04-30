@@ -13,7 +13,7 @@ func Identify(c *Client, cmd Command) Reply {
 	valid := RxDomain.MatchString(cmd.Args) || RxIP.MatchString(trimBrackets(cmd.Args))
 	//TODO: start blacklist check
 	if valid {
-		c.Data["identifier"] = interface{}(cmd.Args)
+		c.Set("identifier", cmd.Args)
 		c.State = Identified
 		return Reply{
 			Result:  Ok,

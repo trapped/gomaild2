@@ -28,15 +28,6 @@ func parseTo(args string) (string, error) {
 	return addr, nil
 }
 
-func appendRecipient(c *Client, new_recipient string) {
-	recipients := c.Data["recipients"]
-	if recipients == nil {
-		recipients = interface{}(make([]string, 0))
-	}
-	recipients = append(recipients.([]string), new_recipient)
-	c.Data["recipients"] = recipients
-}
-
 func Process(c *Client, cmd Command) Reply {
 	if c.State != ReceivingHeaders {
 		return Reply{
@@ -52,7 +43,7 @@ func Process(c *Client, cmd Command) Reply {
 		}
 	}
 	//DO NOT CHECK IF RECIPIENTS EXISTS (that'd leak data)
-	appendRecipient(c, recipient)
+	c.Set("recipients", append(c.GetStringSlice("recipients"), recipient))
 	c.State = ReceivingHeaders
 	return Reply{
 		Result:  Ok,

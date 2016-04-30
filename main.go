@@ -1,8 +1,10 @@
 package main
 
 import (
+	"github.com/fsnotify/fsnotify"
 	log "github.com/sirupsen/logrus"
 	config "github.com/spf13/viper"
+	"github.com/trapped/gomaild2/db"
 	"github.com/trapped/gomaild2/smtp"
 	"io"
 	"os"
@@ -16,9 +18,37 @@ func initlog() {
 	}
 	log.SetOutput(io.MultiWriter(os.Stderr, logfile))
 	log.SetFormatter(&log.TextFormatter{ForceColors: false})
+	log.SetLevel(log.DebugLevel)
 }
 
 func initconfig() {
+	//logging
+	config.SetDefault("log.path", "gomaild2.log")
+	//server
+	config.SetDefault("server.name", "localhost")
+	//smtp
+	config.SetDefault("server.smtp.mta.address", "0.0.0.0")
+	config.SetDefault("server.smtp.msa.address", "0.0.0.0")
+	config.SetDefault("server.smtp.mta.ports", []int{25})
+	config.SetDefault("server.smtp.msa.ports", []int{587})
+	config.SetDefault("server.smtp.mta.require_auth", false)
+	config.SetDefault("server.smtp.msa.require_auth", true)
+	config.SetDefault("server.smtp.msa.outbound", false)
+	config.SetDefault("server.smtp.msa.outbound", true)
+	//password encryption
+	config.BindEnv("pw_encryption") //AES256 GCM key to decrypt passwords from config file
+	config.SetDefault("pw_encryption", "")
+	//db
+	config.SetDefault("db.path", "gomaild2.db")
+	config.SetDefault("db.accept_all_mail", true)
+	//tls
+	config.SetDefault("tls.enabled", false)
+	config.SetDefault("tls.certificate", "")
+	config.SetDefault("tls.key", "")
+	//meta
+	config.SetDefault("config.loaded", false)
+	config.SetDefault("encryption.loaded", false)
+	//read config
 	config.SetConfigName("config")
 	config.AddConfigPath(".")
 	err := config.ReadInConfig()
@@ -26,13 +56,12 @@ func initconfig() {
 		log.Fatalf("Config error: %v", err.Error())
 	}
 	config.WatchConfig()
-	//logging
-	config.SetDefault("log.path", "./gomaild2.log")
-	//global
-	config.SetDefault("server.name", "localhost")
-	//smtp
-	config.SetDefault("server.smtp.address", "0.0.0.0")
-	config.SetDefault("server.smtp.ports", []int{25})
+	config.OnConfigChange(func(e fsnotify.Event) {
+		log.Info("Config file changed: " + e.Name)
+		db.Reopen()
+	})
+	config.Set("config.loaded", true)
+	log.Debug("Config ready")
 }
 
 func init() {
@@ -41,12 +70,21 @@ func init() {
 }
 
 func main() {
-	for _, port := range config.GetStringSlice("server.smtp.ports") {
-		smtp := &smtp.Server{
-			Addr: config.GetString("server.smtp.address"),
-			Port: port,
+	db.Open()
+	defer db.Close()
+	//smtp
+	server := config.Sub("server")
+	for name, _ := range server.GetStringMap("smtp") {
+		srv := server.Sub("smtp").Sub(name)
+		for _, port := range srv.GetStringSlice("ports") {
+			smtp := &smtp.Server{
+				Addr:        srv.GetString("address"),
+				Port:        port,
+				RequireAuth: srv.GetBool("require_auth"),
+				Outbound:    srv.GetBool("outbound"),
+			}
+			go smtp.Start()
 		}
-		go smtp.Start()
 	}
 	for {
 		time.Sleep(10 * time.Second)

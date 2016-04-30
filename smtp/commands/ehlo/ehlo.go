@@ -6,18 +6,13 @@ import (
 	"strings"
 )
 
-func GetExtensions() []string {
-	//TODO: actually check supported extensions
-	return []string{"PIPELINING", "8BITMIME"}
-}
-
 func Process(c *Client, cmd Command) Reply {
 	if c.State >= Identified {
 		return helo.AlreadyIdentified(c, cmd)
 	} else {
 		reply := helo.Identify(c, cmd)
 		if IsSuccess(reply) {
-			reply.Message = strings.Join(append(GetExtensions(), reply.Message), "\n")
+			reply.Message = strings.Join(append(Extensions, reply.Message), "\n")
 		}
 		return reply
 	}

@@ -2,18 +2,49 @@ package data
 
 import (
 	"fmt"
+	config "github.com/spf13/viper"
+	"github.com/trapped/gomaild2/db"
 	. "github.com/trapped/gomaild2/smtp/structs"
 	"strings"
+	"time"
 )
 
-func queueMessage(sender string, recipients []string, body string) {
-	//TODO: Actually queue message
-	fmt.Printf("Sender: %v\nRecipients: %v\nBody:\n\t%v\n", sender,
-		strings.Join(recipients, ", "), strings.Join(strings.Split(body, "\n"), "\n\t"))
+func receivedString(c *Client, e *db.Envelope) string {
+	secure, authenticated := "", ""
+	if c.GetBool("secure") {
+		secure = "S"
+	}
+	if c.GetBool("authenticated") {
+		authenticated = "A"
+	}
+	return fmt.Sprintf("Received: from %v (%v)\r\n\tby %v with ESMTP%v%v id %v;\r\n\t%v\r\n",
+		c.GetString("identifier"), c.Conn.RemoteAddr().String(), config.GetString("server.name"),
+		secure, authenticated, c.ID, e.Date.Format(time.RFC1123Z))
+}
+
+func queueMessage(c *Client, sender string, recipients []string, body string) error {
+	envelope := &db.Envelope{
+		Sender:          sender,
+		Recipients:      recipients,
+		Session:         c.ID,
+		OutboundAllowed: c.GetBool("outbound"),
+		BodySize:        len(body),
+		Date:            time.Now(),
+	}
+
+	//TODO: check sender's domain SPF
+
+	//TODO: add Received-SPF, Authentication-Results
+	headers := ""
+	headers += receivedString(c, envelope)
+
+	return envelope.Save(headers + body)
 }
 
 func Process(c *Client, cmd Command) Reply {
-	if c.State != ReceivingHeaders && len(c.Data["recipients"].([]string)) < 0 {
+	recipients := c.GetStringSlice("recipients")
+	sender := c.GetString("sender")
+	if c.State != ReceivingHeaders && len(recipients) < 0 {
 		return Reply{
 			Result:  BadSequence,
 			Message: "wrong command sequence",
@@ -32,13 +63,20 @@ func Process(c *Client, cmd Command) Reply {
 			return Reply{}
 		}
 		if line == ".\r\n" && strings.HasSuffix(body, "\r\n") {
-			queueMessage(c.Data["sender"].(string),
-				c.Data["recipients"].([]string), body)
-			c.Data["sender"] = nil
-			c.Data["recipients"] = nil
-			return Reply{
-				Result:  Ok,
-				Message: "queued",
+			err = queueMessage(c, sender, recipients, body)
+			c.Set("sender", nil)
+			c.Set("recipients", nil)
+			c.State = Identified
+			if err != nil {
+				return Reply{
+					Result:  LocalError,
+					Message: err.Error(),
+				}
+			} else {
+				return Reply{
+					Result:  Ok,
+					Message: "queued",
+				}
 			}
 		} else {
 			body += line
