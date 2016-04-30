@@ -1,3 +1,4 @@
 gomaild2
 gomaild2.exe
 *.log
+*.db*

@@ -17,5 +17,6 @@ Requires [`gengen`](https://github.com/trapped/gengen) to generate some files (`
   - [x] `DATA`
   - [x] `QUIT`
   - [ ] `AUTH`
+  - [ ] `STARTTLS`
 - [ ] SMTP client (to send outbound emails)
 - [ ] POP3 server

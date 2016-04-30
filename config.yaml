@@ -4,6 +4,33 @@ log:
 server:
   name: localhost
   smtp:
-    address: 0.0.0.0
-    ports:
-      - 25
+    mta:
+      address: 0.0.0.0
+      ports:
+        - 25
+    msa:
+      address: 0.0.0.0
+      require_auth: false
+      outbound: true
+      ports:
+        - 587
+
+domains:
+  test.com:
+    users:
+      - example@U2FsdGVkX1+tcJcwXUzT3mhGoyuftH2r12rgZQGfiMc= #testpassword
+  example.net:
+    users:
+      - test@U2FsdGVkX18pdAMZHf2HFEMi6Cal3Vk7S9gdMnvnup8= #examplepassword
+
+#DO NOT PUT IN CONFIG FILE! SET THROUGH ENV $PW_ENCRYPTION
+pw_encryption: MTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwYWI= #123456789012345678901234567890ab
+
+db:
+  save_all_mail: true
+  path: gomaild2.db
+
+tls:
+  enabled: false
+  certificate: ./testcert.crt
+  key: ./testkey.pem

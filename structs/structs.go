@@ -1,6 +1,8 @@
 package structs
 
 import (
+	log "github.com/sirupsen/logrus"
+	config "github.com/spf13/viper"
 	"math/rand"
 	"time"
 )
@@ -25,4 +27,15 @@ func SessionID(n int) string {
 		}
 	}
 	return string(b)
+}
+
+func WaitConfig(c string) {
+	for {
+		if config.GetBool(c) {
+			log.Debug("Got ", c)
+			break
+		}
+		log.Debug("Waiting for ", c)
+		time.Sleep(50 * time.Millisecond)
+	}
 }
