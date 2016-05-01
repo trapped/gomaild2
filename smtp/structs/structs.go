@@ -63,11 +63,20 @@ type Reply struct {
 }
 
 type Client struct {
-	Conn  net.Conn
-	ID    string
-	State SessionState
-	Rdr   *bufio.ReadWriter
-	Data  map[string]interface{}
+	Conn         net.Conn
+	ID           string
+	State        SessionState
+	Rdr          *bufio.ReadWriter
+	Data         map[string]interface{}
+	default_data map[string]interface{}
+}
+
+func (c *Client) SaveData() {
+	c.default_data = c.Data
+}
+
+func (c *Client) ResetData() {
+	c.Data = c.default_data
 }
 
 func (c *Client) Set(key string, value interface{}) {

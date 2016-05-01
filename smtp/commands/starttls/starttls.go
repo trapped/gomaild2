@@ -76,6 +76,8 @@ func Process(c *Client, cmd Command) Reply {
 
 	c.Conn = tls.Server(c.Conn, conf)
 
+	c.ResetData()
+
 	return Reply{
 		Result: Ignore,
 	}

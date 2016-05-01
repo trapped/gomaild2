@@ -39,6 +39,7 @@ func (s *Server) Start() {
 		}
 		client.Set("outbound", s.Outbound)
 		client.Set("require_auth", s.RequireAuth)
+		client.SaveData()
 		go accept(client)
 	}
 }

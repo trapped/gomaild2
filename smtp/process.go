@@ -23,6 +23,8 @@ import (
 
 	"github.com/trapped/gomaild2/smtp/commands/rcpt"
 
+	"github.com/trapped/gomaild2/smtp/commands/rset"
+
 	"github.com/trapped/gomaild2/smtp/commands/starttls"
 )
 
@@ -59,6 +61,10 @@ func Process(c *Client, cmd Command) (reply Reply) {
 
 	case "rcpt":
 		reply = rcpt.Process(c, cmd)
+		break
+
+	case "rset":
+		reply = rset.Process(c, cmd)
 		break
 
 	case "starttls":
