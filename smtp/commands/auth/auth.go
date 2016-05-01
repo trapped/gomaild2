@@ -93,6 +93,12 @@ func processAuth(c *Client, method string, auth string) Reply {
 }
 
 func Process(c *Client, cmd Command) Reply {
+	if c.State != Identified {
+		return Reply{
+			Result:  BadSequence,
+			Message: "wrong command sequence",
+		}
+	}
 	args := strings.Split(cmd.Args, " ")
 	if len(args) == 1 {
 		return processAuth(c, args[0], "")
