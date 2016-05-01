@@ -90,10 +90,10 @@ func __hash(prev, password, salt []byte) []byte {
 	copy(a, prev)
 	copy(a[len(prev):], password)
 	copy(a[len(prev)+len(password):], salt)
-	return md5sum(a)
+	return MD5(a)
 }
 
-func md5sum(data []byte) []byte {
+func MD5(data []byte) []byte {
 	h := md5.New()
 	h.Write(data)
 	return h.Sum(nil)

@@ -22,6 +22,7 @@ const (
 	Closing                             = 221
 	AuthenticationSuccessful            = 235
 	Ok                                  = 250
+	StartAuth                           = 334
 	StartSending                        = 354
 	Unavailable                         = 421
 	LocalError                          = 451
@@ -30,6 +31,7 @@ const (
 	BadSequence                         = 503
 	CommandNotImplemented               = 504
 	AuthenticationRequired              = 530
+	AuthenticationInvalid               = 535
 	TransactionFailed                   = 554
 )
 

@@ -71,7 +71,7 @@ func (e *Envelope) Save(body string) error {
 				return_path = fmt.Sprintf("Return-Path: <%v>\r\n", e.Sender)
 			}
 			if msg.Header.Get("Message-ID") == "" {
-				return_path = fmt.Sprintf("Message-ID: <%v.%v@%v>\r\n", string(md5sum(env_json)), string(md5sum([]byte(body))), config.GetString("server.name"))
+				return_path = fmt.Sprintf("Message-ID: <%v.%v@%v>\r\n", string(MD5(env_json)), string(MD5([]byte(body))), config.GetString("server.name"))
 			}
 		}
 		headers := message_id + return_path
