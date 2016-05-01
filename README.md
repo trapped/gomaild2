@@ -5,7 +5,7 @@ Requires [`gengen`](https://github.com/trapped/gengen) to generate some files (`
 
 ##Status
 
-- [ ] DB interface to actually store emails
+- [x] DB interface to actually store emails
 - [x] YAML config
 - [x] Logging (logfmt)
 - [ ] SMTP server
@@ -16,7 +16,8 @@ Requires [`gengen`](https://github.com/trapped/gengen) to generate some files (`
   - [x] `RCPT TO`
   - [x] `DATA`
   - [x] `QUIT`
-  - [ ] `AUTH`
-  - [ ] `STARTTLS`
+  - [x] `AUTH`
+  - [x] `STARTTLS`
+  - [ ] `DSN` (Delivery Status Notifications)
 - [ ] SMTP client (to send outbound emails)
 - [ ] POP3 server
