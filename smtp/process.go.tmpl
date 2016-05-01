@@ -25,6 +25,9 @@ func Process(c *Client, cmd Command) (reply Reply) {
     }
     break
   }
+  if reply.Result == Ignore {
+    return
+  }
   log.WithFields(log.Fields{
     "id":   c.ID,
     "cmd":  cmd.Verb,

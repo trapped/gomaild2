@@ -74,9 +74,27 @@ func Process(c *Client, cmd Command) Reply {
 		Message: "ready to start TLS",
 	})
 
-	c.Conn = tls.Server(c.Conn, conf)
+	conn := tls.Server(c.Conn, conf)
+	err = conn.Handshake()
+	if err != nil {
+		log.WithFields(log.Fields{
+			"id":  c.ID,
+			"err": err,
+		}).Error("TLS handshake failed")
+		c.State = Disconnected
+		return Reply{
+			Result:  LocalError,
+			Message: "TLS handshake failed",
+		}
+	}
+	c.Conn = conn
+
+	log.WithField("id", c.ID).Info("Switched to TLS")
 
 	c.ResetData()
+	c.Set("tls", true)
+	c.State = Connected
+	c.MakeReader()
 
 	return Reply{
 		Result: Ignore,

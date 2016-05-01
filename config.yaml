@@ -31,6 +31,6 @@ db:
   path: gomaild2.db
 
 tls:
-  enabled: false
-  certificate: ./testcert.crt
-  key: ./testkey.pem
+  enabled: true
+  certificate: ./localhost.crt
+  key: ./localhost.key

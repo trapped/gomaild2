@@ -1,7 +1,6 @@
 package smtp
 
 import (
-	"bufio"
 	log "github.com/sirupsen/logrus"
 	config "github.com/spf13/viper"
 	. "github.com/trapped/gomaild2/smtp/structs"
@@ -33,10 +32,10 @@ func (s *Server) Start() {
 		c, _ := l.Accept()
 		client := &Client{
 			Conn: c,
-			Rdr:  bufio.NewReadWriter(bufio.NewReader(c), bufio.NewWriter(c)),
 			Data: make(map[string]interface{}),
 			ID:   SessionID(12),
 		}
+		client.MakeReader()
 		client.Set("outbound", s.Outbound)
 		client.Set("require_auth", s.RequireAuth)
 		client.SaveData()

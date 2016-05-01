@@ -71,6 +71,10 @@ type Client struct {
 	default_data map[string]interface{}
 }
 
+func (c *Client) MakeReader() {
+	c.Rdr = bufio.NewReadWriter(bufio.NewReader(c.Conn), bufio.NewWriter(c.Conn))
+}
+
 func (c *Client) SaveData() {
 	c.default_data = c.Data
 }
