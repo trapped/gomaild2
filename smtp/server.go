@@ -44,12 +44,21 @@ func (s *Server) Start() {
 }
 
 func accept(c *Client) {
+	defer func() {
+		c.Conn.Close()
+		log.WithFields(log.Fields{
+			"id":   c.ID,
+			"addr": c.Conn.RemoteAddr().String(),
+		}).Info("Disconnected")
+	}()
+
 	c.Send(Reply{Result: Ready, Message: config.GetString("server.name") + " gomaild2 ESMTP ready"})
 	c.State = Connected
 	log.WithFields(log.Fields{
 		"id":   c.ID,
 		"addr": c.Conn.RemoteAddr().String(),
 	}).Info("Connected")
+
 	for {
 		if c.State == Disconnected {
 			break
@@ -60,9 +69,4 @@ func accept(c *Client) {
 		}
 		c.Send(Process(c, cmd))
 	}
-	c.Conn.Close()
-	log.WithFields(log.Fields{
-		"id":   c.ID,
-		"addr": c.Conn.RemoteAddr().String(),
-	}).Info("Disconnected")
 }

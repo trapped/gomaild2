@@ -16,6 +16,9 @@ server:
         - 587
 
 domains:
+  test.pellero.it:
+    users:
+      - test@U2FsdGVkX1+tcJcwXUzT3mhGoyuftH2r12rgZQGfiMc= #testpassword
   test.com:
     users:
       - example@U2FsdGVkX1+tcJcwXUzT3mhGoyuftH2r12rgZQGfiMc= #testpassword
@@ -24,6 +27,7 @@ domains:
       - test@U2FsdGVkX18pdAMZHf2HFEMi6Cal3Vk7S9gdMnvnup8= #examplepassword
 
 #DO NOT PUT IN CONFIG FILE! SET THROUGH ENV $PW_ENCRYPTION
+#echo -n "password" | openssl aes-256-cbc -a
 pw_encryption: MTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwYWI= #123456789012345678901234567890ab
 
 db:
