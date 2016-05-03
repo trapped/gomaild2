@@ -16,14 +16,12 @@ func Process(c *Client, cmd Command) (reply Reply) {
   {{range $k, $v := .Packages}}
   case "{{$k}}":
     reply = {{$k}}.Process(c, cmd)
-    break
   {{end}}
   default:
     reply = Reply{
       Result: CommandNotImplemented,
       Message: "command not implemented",
     }
-    break
   }
   if reply.Result == Ignore {
     return

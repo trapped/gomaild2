@@ -33,50 +33,39 @@ func Process(c *Client, cmd Command) (reply Reply) {
 
 	case "auth":
 		reply = auth.Process(c, cmd)
-		break
 
 	case "data":
 		reply = data.Process(c, cmd)
-		break
 
 	case "ehlo":
 		reply = ehlo.Process(c, cmd)
-		break
 
 	case "helo":
 		reply = helo.Process(c, cmd)
-		break
 
 	case "mail":
 		reply = mail.Process(c, cmd)
-		break
 
 	case "noop":
 		reply = noop.Process(c, cmd)
-		break
 
 	case "quit":
 		reply = quit.Process(c, cmd)
-		break
 
 	case "rcpt":
 		reply = rcpt.Process(c, cmd)
-		break
 
 	case "rset":
 		reply = rset.Process(c, cmd)
-		break
 
 	case "starttls":
 		reply = starttls.Process(c, cmd)
-		break
 
 	default:
 		reply = Reply{
 			Result:  CommandNotImplemented,
 			Message: "command not implemented",
 		}
-		break
 	}
 	if reply.Result == Ignore {
 		return
