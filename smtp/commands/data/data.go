@@ -5,6 +5,7 @@ import (
 	config "github.com/spf13/viper"
 	"github.com/trapped/gomaild2/db"
 	. "github.com/trapped/gomaild2/smtp/structs"
+	. "github.com/trapped/gomaild2/structs"
 	"strings"
 	"time"
 )
@@ -27,8 +28,8 @@ func queueMessage(c *Client, sender string, recipients []string, body string) er
 		Sender:          sender,
 		Recipients:      recipients,
 		Session:         c.ID,
+		ID:              c.ID + "." + SessionID(12),
 		OutboundAllowed: c.GetBool("outbound"),
-		BodySize:        len(body),
 		Date:            time.Now(),
 	}
 
@@ -37,8 +38,9 @@ func queueMessage(c *Client, sender string, recipients []string, body string) er
 	//TODO: add Received-SPF, Authentication-Results
 	headers := ""
 	headers += receivedString(c, envelope)
+	envelope.Body = headers + body
 
-	return envelope.Save(headers + body)
+	return envelope.Save()
 }
 
 func Process(c *Client, cmd Command) Reply {
