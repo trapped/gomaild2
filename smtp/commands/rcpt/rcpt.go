@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	rxExtractAddr *regexp.Regexp = regexp.MustCompile("^TO:<(.*)>$")
+	rxExtractAddr *regexp.Regexp = regexp.MustCompile("(?i)^TO:<(.*)>$")
 )
 
 func parseTo(args string) (string, error) {

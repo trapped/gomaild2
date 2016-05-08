@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	rxExtractAddr *regexp.Regexp = regexp.MustCompile("^FROM:<(.*)>$")
+	rxExtractAddr *regexp.Regexp = regexp.MustCompile("(?i)^FROM:<(.*)>$")
 )
 
 func parseFrom(args string) (string, error) {
