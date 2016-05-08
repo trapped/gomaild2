@@ -83,8 +83,8 @@ func Process(c *Client, cmd Command) (reply Reply) {
 
 	default:
 		reply = Reply{
-		//Result: CommandNotImplemented,
-		//Message: "command not implemented",
+			Result:  ERR,
+			Message: "command not implemented",
 		}
 	}
 	//if reply.Result == Ignore {
@@ -95,7 +95,6 @@ func Process(c *Client, cmd Command) (reply Reply) {
 		"cmd":    cmd.Verb,
 		"args":   cmd.Args,
 		"result": reply.Result,
-		//"reply": LastLine(reply),
 	}).Info("status")
 	return
 }
