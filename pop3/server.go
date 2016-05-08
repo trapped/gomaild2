@@ -13,6 +13,7 @@ type Server struct {
 }
 
 //go:generate gengen -d ./commands/ -t process.go.tmpl -o process.go
+
 func (s *Server) Start() {
 	log.WithFields(log.Fields{
 		"addr": s.Addr,
@@ -35,26 +36,30 @@ func (s *Server) Start() {
 }
 
 func accept(c *Client) {
+	log := log.WithFields(log.Fields{
+		"id":   c.ID,
+		"addr": c.Conn.RemoteAddr().String(),
+	})
 	defer func() {
+		if r := recover(); r != nil {
+			log.Error(r)
+		}
 		c.Conn.Close()
-		log.WithFields(log.Fields{
-			"addr": c.Conn.RemoteAddr().String(),
-		}).Info("Disconnected")
+		log.Info("Disconnected")
 	}()
 
 	c.Send(Reply{Result: OK, Message: "gomaild2 POP3 ready"})
 	c.State = Authorization
-	log.WithFields(log.Fields{
-		"id":   c.ID,
-		"addr": c.Conn.RemoteAddr().String(),
-	}).Info("Connected")
+	log.Info("Connected")
 
 	for {
+		if c.State == Disconnected {
+			break
+		}
 		cmd, err := c.Receive()
 		if err != nil {
 			break
 		}
 		c.Send(Process(c, cmd))
 	}
-
 }
