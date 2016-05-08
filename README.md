@@ -21,3 +21,15 @@ Requires [`gengen`](https://github.com/trapped/gengen) to generate some files (`
   - [ ] `DSN` (Delivery Status Notifications)
 - [ ] SMTP client (to send outbound emails)
 - [ ] POP3 server
+  - [ ] `APOP`
+  - [ ] `DELE`
+  - [ ] `LIST`
+  - [x] `NOOP`
+  - [ ] `PASS`
+  - [ ] `QUIT`
+  - [ ] `RETR`
+  - [ ] `RSET`
+  - [ ] `STAT`
+  - [ ] `UIDL`
+  - [ ] `USER`
+  - [ ] `AUTH`

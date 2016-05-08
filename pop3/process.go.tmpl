@@ -1,0 +1,37 @@
+package pop3
+
+//WARNING: Automatically generated file. DO NOT EDIT!
+
+import (
+  "strings"
+  . "github.com/mbags/gomaild2/pop3/structs"
+  log "github.com/sirupsen/logrus"
+  {{range $k, $v := .Packages}}
+  "github.com/mbags/gomaild2/pop3/commands/{{$k}}"
+  {{end}}
+)
+
+func Process(c *Client, cmd Command) (reply Reply) {
+  switch strings.ToLower(cmd.Verb) {
+  {{range $k, $v := .Packages}}
+  case "{{$k}}":
+    reply = {{$k}}.Process(c, cmd)
+  {{end}}
+  default:
+    reply = Reply{
+      //Result: CommandNotImplemented,
+      //Message: "command not implemented",
+    }
+  }
+  //if reply.Result == Ignore {
+    //return
+  //}
+  log.WithFields(log.Fields{
+    "id":   c.ID,
+    "cmd":  cmd.Verb,
+    "args": cmd.Args,
+    "result": reply.Result,
+    //"reply": LastLine(reply),
+  }).Info("status")
+  return
+}

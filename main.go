@@ -2,13 +2,13 @@ package main
 
 import (
 	"github.com/fsnotify/fsnotify"
+	"github.com/mbags/gomaild2/pop3"
 	log "github.com/sirupsen/logrus"
 	config "github.com/spf13/viper"
 	"github.com/trapped/gomaild2/db"
 	"github.com/trapped/gomaild2/smtp"
 	"io"
 	"os"
-	"time"
 )
 
 func initlog() {
@@ -70,6 +70,7 @@ func init() {
 }
 
 func main() {
+	run := make(<-chan struct{})
 	db.Open()
 	defer db.Close()
 	//smtp
@@ -86,7 +87,11 @@ func main() {
 			go smtp.Start()
 		}
 	}
-	for {
-		time.Sleep(10 * time.Second)
+	//pop3
+	pop3srv := &pop3.Server{
+		Addr: "0.0.0.0",
+		Port: "101",
 	}
+	go pop3srv.Start()
+	<-run
 }
