@@ -88,10 +88,15 @@ func main() {
 		}
 	}
 	//pop3
-	pop3srv := &pop3.Server{
-		Addr: "0.0.0.0",
-		Port: "101",
+	for name, _ := range server.GetStringMap("pop3") {
+		srv := server.Sub("pop3").Sub(name)
+		for _, port := range srv.GetStringSlice("ports") {
+			pop3 := &pop3.Server{
+				Addr: srv.GetString("address"),
+				Port: port,
+			}
+			go pop3.Start()
+		}
 	}
-	go pop3srv.Start()
 	<-run
 }

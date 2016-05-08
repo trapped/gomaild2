@@ -14,6 +14,11 @@ server:
       outbound: true
       ports:
         - 587
+  pop3:
+    local:
+      address: 127.0.0.1
+      ports:
+        - 110
 
 domains:
   test.pellero.it:
