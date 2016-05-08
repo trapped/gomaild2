@@ -3,37 +3,37 @@ package pop3
 //WARNING: Automatically generated file. DO NOT EDIT!
 
 import (
-	. "github.com/mbags/gomaild2/pop3/structs"
 	log "github.com/sirupsen/logrus"
+	. "github.com/trapped/gomaild2/pop3/structs"
 	"strings"
 
-	"github.com/mbags/gomaild2/pop3/commands/apop"
+	"github.com/trapped/gomaild2/pop3/commands/apop"
 
-	"github.com/mbags/gomaild2/pop3/commands/auth"
+	"github.com/trapped/gomaild2/pop3/commands/auth"
 
-	"github.com/mbags/gomaild2/pop3/commands/dele"
+	"github.com/trapped/gomaild2/pop3/commands/dele"
 
-	"github.com/mbags/gomaild2/pop3/commands/list"
+	"github.com/trapped/gomaild2/pop3/commands/list"
 
-	"github.com/mbags/gomaild2/pop3/commands/noop"
+	"github.com/trapped/gomaild2/pop3/commands/noop"
 
-	"github.com/mbags/gomaild2/pop3/commands/pass"
+	"github.com/trapped/gomaild2/pop3/commands/pass"
 
-	"github.com/mbags/gomaild2/pop3/commands/quit"
+	"github.com/trapped/gomaild2/pop3/commands/quit"
 
-	"github.com/mbags/gomaild2/pop3/commands/retr"
+	"github.com/trapped/gomaild2/pop3/commands/retr"
 
-	"github.com/mbags/gomaild2/pop3/commands/rset"
+	"github.com/trapped/gomaild2/pop3/commands/rset"
 
-	"github.com/mbags/gomaild2/pop3/commands/stat"
+	"github.com/trapped/gomaild2/pop3/commands/stat"
 
-	"github.com/mbags/gomaild2/pop3/commands/stls"
+	"github.com/trapped/gomaild2/pop3/commands/stls"
 
-	"github.com/mbags/gomaild2/pop3/commands/top"
+	"github.com/trapped/gomaild2/pop3/commands/top"
 
-	"github.com/mbags/gomaild2/pop3/commands/uidl"
+	"github.com/trapped/gomaild2/pop3/commands/uidl"
 
-	"github.com/mbags/gomaild2/pop3/commands/user"
+	"github.com/trapped/gomaild2/pop3/commands/user"
 )
 
 func Process(c *Client, cmd Command) (reply Reply) {

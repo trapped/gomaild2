@@ -1,8 +1,8 @@
 package pop3
 
 import (
-	. "github.com/mbags/gomaild2/pop3/structs"
 	log "github.com/sirupsen/logrus"
+	. "github.com/trapped/gomaild2/pop3/structs"
 	. "github.com/trapped/gomaild2/structs"
 	"net"
 )

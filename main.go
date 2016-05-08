@@ -2,10 +2,10 @@ package main
 
 import (
 	"github.com/fsnotify/fsnotify"
-	"github.com/mbags/gomaild2/pop3"
 	log "github.com/sirupsen/logrus"
 	config "github.com/spf13/viper"
 	"github.com/trapped/gomaild2/db"
+	"github.com/trapped/gomaild2/pop3"
 	"github.com/trapped/gomaild2/smtp"
 	"io"
 	"os"

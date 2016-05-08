@@ -1,6 +1,7 @@
 package top
+
 import (
-	. "github.com/mbags/gomaild2/pop3/structs"
+	. "github.com/trapped/gomaild2/pop3/structs"
 )
 
 func Process(c *Client, cmd Command) Reply {

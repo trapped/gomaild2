@@ -4,10 +4,10 @@ package pop3
 
 import (
   "strings"
-  . "github.com/mbags/gomaild2/pop3/structs"
+  . "github.com/trapped/gomaild2/pop3/structs"
   log "github.com/sirupsen/logrus"
   {{range $k, $v := .Packages}}
-  "github.com/mbags/gomaild2/pop3/commands/{{$k}}"
+  "github.com/trapped/gomaild2/pop3/commands/{{$k}}"
   {{end}}
 )
 
