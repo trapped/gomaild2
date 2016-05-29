@@ -31,6 +31,7 @@ func queueMessage(c *Client, sender string, recipients []string, body string) er
 		ID:              c.ID + "." + SessionID(12),
 		OutboundAllowed: c.GetBool("outbound"),
 		Date:            time.Now(),
+		NextDeliverTime: time.Now(),
 	}
 
 	//TODO: check sender's domain SPF

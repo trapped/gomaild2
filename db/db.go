@@ -28,7 +28,7 @@ func Users() map[string]string {
 	return users
 }
 
-func userBucket(tx *bolt.Tx, user string) (*bolt.Bucket, error) {
+func UserBucket(tx *bolt.Tx, user string) (*bolt.Bucket, error) {
 	b, err := tx.CreateBucketIfNotExists([]byte(user))
 	_, err = b.CreateBucketIfNotExists([]byte("inbound"))
 	_, err = b.CreateBucketIfNotExists([]byte("outbound"))
@@ -42,7 +42,7 @@ func Open() {
 	}
 	d.Update(func(tx *bolt.Tx) error {
 		for user, _ := range Users() {
-			_, err := userBucket(tx, user)
+			_, err := UserBucket(tx, user)
 			if err != nil {
 				return err
 			}
@@ -50,6 +50,7 @@ func Open() {
 				"user": user,
 			}).Info("Mailbox loaded")
 		}
+		UnassignAll(tx)
 		return nil
 	})
 	db = d

@@ -2,8 +2,12 @@ package capa
 
 import (
 	. "github.com/trapped/gomaild2/pop3/structs"
+	"strings"
 )
 
 func Process(c *Client, cmd Command) Reply {
-	return Reply{Result: OK, Message: "Capability list follows\r\nSASL PLAIN LOGIN CRAM-MD5\r\n."}
+	return Reply{
+		Result:  OK,
+		Message: "capability list follows\r\n" + strings.Join(Extensions, "\r\n") + "\r\n.",
+	}
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/trapped/gomaild2/db"
 	"github.com/trapped/gomaild2/pop3"
 	"github.com/trapped/gomaild2/smtp"
+	"github.com/trapped/gomaild2/smtp/transfer"
 	"io"
 	"os"
 )
@@ -45,6 +46,10 @@ func initconfig() {
 	config.SetDefault("tls.enabled", false)
 	config.SetDefault("tls.certificate", "")
 	config.SetDefault("tls.key", "")
+	//transfer
+	config.SetDefault("transfer.max_tries", 3)
+	config.SetDefault("transfer.worker_count", 1)
+	config.SetDefault("transfer.allow_insecure", true)
 	//meta
 	config.SetDefault("config.loaded", false)
 	config.SetDefault("encryption.loaded", false)
@@ -98,5 +103,8 @@ func main() {
 			go pop3.Start()
 		}
 	}
+	//transfer agent
+	transfer := &transfer.Agent{}
+	go transfer.Start()
 	<-run
 }

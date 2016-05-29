@@ -1,18 +1,35 @@
 package retr
 
 import (
+	"fmt"
+	"github.com/trapped/gomaild2/db"
 	. "github.com/trapped/gomaild2/pop3/structs"
+	"strconv"
 )
 
 // Arguments:
 // a message-number (required) which may NOT refer to a
 // message marked as deleted
 func Process(c *Client, cmd Command) Reply {
-	res := OK
-	msg := ""
 	if c.State != Transaction {
-		res = ERR
-		msg = "invalid state"
+		return Reply{
+			Result:  ERR,
+			Message: "invalid state",
+		}
 	}
-	return Reply{Result: res, Message: msg}
+	envs := db.List(c.GetString("authenticated_as"))
+	if cmd.Args != "" {
+		for i, env := range envs {
+			if strconv.Itoa(i) == cmd.Args {
+				return Reply{
+					Result:  OK,
+					Message: fmt.Sprintf("%v octets\r\n", len(env.Body)) + env.Body + "\r\n.",
+				}
+			}
+		}
+	}
+	return Reply{
+		Result:  ERR,
+		Message: "no such message",
+	}
 }

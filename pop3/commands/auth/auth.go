@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	config "github.com/spf13/viper"
 	"github.com/trapped/gomaild2/db"
 	. "github.com/trapped/gomaild2/pop3/structs"
@@ -19,8 +20,9 @@ var (
 )
 
 func init() {
-	Extensions = append(Extensions, "AUTH PLAIN LOGIN CRAM-MD5")
+	Extensions = append(Extensions, "SASL CRAM-MD5")
 }
+
 func decodeCreds(auth string) (string, string, string) {
 	decoded, _ := base64.StdEncoding.DecodeString(auth)
 	split := strings.Split(string(decoded), "\x00")
@@ -36,6 +38,10 @@ func verify(c *Client, username string, password string) Reply {
 		c.Set("authenticated_as", username)
 		//TODO: aquire lock here on db
 		c.State = Transaction
+		log.WithFields(log.Fields{
+			"id":   c.ID,
+			"user": username,
+		}).Info("Logged in")
 		return Reply{
 			Result:  OK,
 			Message: "authentication successful",
@@ -52,6 +58,7 @@ func processAuth(c *Client, method string, auth string) Reply {
 	switch strings.ToUpper(method) {
 	case "PLAIN": // Ex: XXX\x00example@test.com\x00testpassword = eHh4eABleGFtcGxlQHRlc3QuY29tAHRlc3RwYXNzd29yZA==
 		if auth == "" {
+			c.Send(Reply{Result: OK, Message: "go on"})
 			authcmd, _ := c.Receive()
 			auth = authcmd.Verb
 		}
@@ -100,7 +107,12 @@ func Process(c *Client, cmd Command) Reply {
 
 	args := strings.Split(cmd.Args, " ")
 
-	if len(args) == 1 {
+	if len(args) == 0 || args[0] == "" {
+		return Reply{
+			Result:  OK,
+			Message: "\r\n" + strings.Join([]string{"PLAIN", "LOGIN", "CRAM-MD5"}, "\r\n") + "\r\n.",
+		}
+	} else if len(args) == 1 {
 		return processAuth(c, args[0], "")
 	} else if len(args) == 2 {
 		return processAuth(c, args[0], args[1])

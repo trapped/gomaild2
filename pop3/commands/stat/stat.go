@@ -1,25 +1,23 @@
 package stat
 
 import (
+	"fmt"
 	"github.com/trapped/gomaild2/db"
 	. "github.com/trapped/gomaild2/pop3/structs"
-	"strconv"
 )
 
 func Process(c *Client, cmd Command) Reply {
-	res := OK
-	msg := ""
 	if c.State != Transaction {
-		res = ERR
-		msg = "invalid state"
+		return Reply{
+			Result:  ERR,
+			Message: "invalid state",
+		}
 	}
 
-	cnt, sz, err := db.Stat(c.GetString("authenticated_as"))
-	if err != nil {
-		msg = "couldn't get mailbox"
-		return Reply{Result: ERR, Message: msg}
-	}
+	cnt, sz := db.Stat(c.GetString("authenticated_as"))
 
-	msg = strconv.FormatInt(int64(cnt), 10) + " " + strconv.FormatInt(int64(sz), 10)
-	return Reply{Result: res, Message: msg} // want : +OK XX(#emails) YYY(#bytes)
+	return Reply{
+		Result:  OK,
+		Message: fmt.Sprintf("%v %v", cnt, sz),
+	} // want : +OK XX(#emails) YYY(#bytes)
 }

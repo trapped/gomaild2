@@ -17,9 +17,10 @@ type EnvelopeStatus uint8
 const (
 	Inbound   EnvelopeType   = 0
 	Outbound                 = 1
-	Delivered                = 0
-	Pending   EnvelopeStatus = 1 //only meaningful if Type is Outbound
+	Pending   EnvelopeStatus = 0 //only meaningful if Type is Outbound
+	Delivered                = 1
 	Failed                   = 2 //DeliverTries exceeded maximum tries
+	Assigned                 = 3
 )
 
 type Envelope struct {
@@ -36,11 +37,31 @@ type Envelope struct {
 	Date            time.Time
 }
 
-/*
-  user:
-    inbound:  json(Envelope) = body
-    outbound: json(Envelope) = body
-*/
+func UnassignAll(tx *bolt.Tx) {
+	for user, _ := range Users() {
+		b, err := UserBucket(tx, user)
+		if err != nil {
+			log.Error(err)
+		}
+		bo := b.Bucket([]byte("outbound"))
+		bo.ForEach(func(k, v []byte) error {
+			env := &Envelope{}
+			err := json.Unmarshal(v, env)
+			if err != nil {
+				log.Error(err)
+			}
+			if env.Status == Assigned {
+				env.Status = Pending
+				env_json, err := json.Marshal(env)
+				if err != nil {
+					log.Error(err)
+				}
+				bo.Put([]byte(env.ID), []byte(env_json))
+			}
+			return nil
+		})
+	}
+}
 
 func (e *Envelope) Save() error {
 	return db.Update(func(tx *bolt.Tx) error {
@@ -88,7 +109,7 @@ func (e *Envelope) Save() error {
 				r_headers := delivered_to + headers
 				r_env.Body = r_headers + r_env.Body
 
-				b, err := userBucket(tx, rcpt)
+				b, err := UserBucket(tx, rcpt)
 				inbound := b.Bucket([]byte("inbound"))
 
 				env_json, err := json.Marshal(r_env)
@@ -118,7 +139,7 @@ func (e *Envelope) Save() error {
 				return fmt.Errorf("outbound mail not allowed")
 			}
 
-			b, err := userBucket(tx, e.Sender)
+			b, err := UserBucket(tx, e.Sender)
 			if err != nil {
 				env_log.Error("Couldn't access sender box: ", err)
 				return fmt.Errorf("couldn't access sender box")
@@ -147,31 +168,79 @@ func (e *Envelope) Save() error {
 	})
 }
 
-func Stat(username string) (int, int, error) {
-	var env Envelope
+func Stat(username string) (int, int) {
 	size := 0
 	cnt := 0
-	err := db.View(func(tx *bolt.Tx) error {
+	db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(username))
 		inbound := b.Bucket([]byte("inbound"))
-
 		err := inbound.ForEach(func(k, v []byte) error {
+			env := &Envelope{}
 			err := json.Unmarshal(v, &env)
 			if err != nil {
-				return err
+				log.Error(err)
+				return nil
 			}
-
 			cnt++
 			size += len(env.Body)
-
 			return nil
 		})
-
 		if err != nil {
-			return err
+			log.Error(err)
+			return nil
 		}
 		return nil
 	})
+	return cnt, size
+}
 
-	return cnt, size, err
+func List(username string) []*Envelope {
+	envs := make([]*Envelope, 0)
+	db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(username))
+		inbound := b.Bucket([]byte("inbound"))
+		inbound.ForEach(func(k, v []byte) error {
+			env := &Envelope{}
+			err := json.Unmarshal(v, &env)
+			if err != nil {
+				log.Error(err)
+				return nil
+			}
+			envs = append(envs, env)
+			return nil
+		})
+		return nil
+	})
+	return envs
+}
+
+func Sweep() []*Envelope {
+	log.Info("Starting outbound sweep")
+	envs := make([]*Envelope, 0)
+	db.Update(func(tx *bolt.Tx) error {
+		for user, _ := range Users() {
+			b := tx.Bucket([]byte(user))
+			ob := b.Bucket([]byte("outbound"))
+			ob.ForEach(func(k, v []byte) error {
+				env := &Envelope{}
+				err := json.Unmarshal(v, env)
+				if err != nil {
+					log.WithFields(log.Fields{
+						"user":   user,
+						"bucket": "outbound",
+						"id":     string(k),
+					}).Error("Couldn't unmarshal envelope")
+				} else {
+					//status must be Pending and NextDeliverTime date must have passed
+					if env.Status != Pending || !env.NextDeliverTime.Before(time.Now()) {
+						return nil
+					}
+					envs = append(envs, env)
+				}
+				return nil
+			})
+		}
+		return nil
+	})
+	return envs
 }

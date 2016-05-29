@@ -1,8 +1,16 @@
 package uidl
 
 import (
+	"fmt"
+	"github.com/trapped/gomaild2/db"
 	. "github.com/trapped/gomaild2/pop3/structs"
+	"strconv"
+	"strings"
 )
+
+func init() {
+	Extensions = append(Extensions, "UIDL")
+}
 
 // Arguments:
 // a message-number (optional), which, if present, may NOT
@@ -10,11 +18,40 @@ import (
 // Restrictions:
 // may only be given in the TRANSACTION state.
 func Process(c *Client, cmd Command) Reply {
-	res := OK
-	msg := ""
 	if c.State != Transaction {
-		res = ERR
-		msg = "invalid state"
+		return Reply{
+			Result:  ERR,
+			Message: "invalid state",
+		}
 	}
-	return Reply{Result: res, Message: msg}
+	envs := db.List(c.GetString("authenticated_as"))
+	if cmd.Args == "" {
+		msg := []string{"\r\n"}
+		for i, env := range envs {
+			msg = append(msg, fmt.Sprintf("%v %v", i, env.ID))
+		}
+		msg = append(msg, ".")
+		return Reply{
+			Result:  OK,
+			Message: strings.Join(msg, "\r\n"),
+		}
+	} else if cmd.Args != "" {
+		for i, env := range envs {
+			if strconv.Itoa(i) == cmd.Args {
+				return Reply{
+					Result:  OK,
+					Message: fmt.Sprintf("%v %v", i, env.ID),
+				}
+			}
+		}
+		return Reply{
+			Result:  ERR,
+			Message: "no such message",
+		}
+	} else {
+		return Reply{
+			Result:  ERR,
+			Message: "syntax error in command arguments",
+		}
+	}
 }

@@ -20,6 +20,11 @@ server:
       ports:
         - 110
 
+transfer:
+  max_tries: 3
+  worker_count: 1
+  allow_insecure: true
+
 domains:
   test.pellero.it:
     users:

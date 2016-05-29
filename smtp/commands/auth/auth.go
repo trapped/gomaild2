@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	config "github.com/spf13/viper"
 	"github.com/trapped/gomaild2/db"
 	. "github.com/trapped/gomaild2/smtp/structs"
@@ -35,6 +36,10 @@ func verify(c *Client, username string, password string) Reply {
 	if pw, exists := db.Users()[username]; exists && pw == password {
 		c.Set("authenticated", true)
 		c.Set("authenticated_as", username)
+		log.WithFields(log.Fields{
+			"id":   c.ID,
+			"user": username,
+		}).Info("Logged in")
 		return Reply{
 			Result:  AuthenticationSuccessful,
 			Message: "authentication successful",

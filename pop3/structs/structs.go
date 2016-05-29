@@ -19,7 +19,9 @@ const (
 
 type SessionState int
 
-var Extensions []string
+var Extensions []string = []string{
+	"PIPELINING",
+}
 
 const (
 	Authorization SessionState = iota
