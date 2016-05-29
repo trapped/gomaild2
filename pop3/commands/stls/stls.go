@@ -13,7 +13,7 @@ func initTLS() {
 	WaitConfig("config.loaded")
 	if config.GetBool("tls.enabled") {
 		log.Info("Enabled TLS")
-		Extensions = append(Extensions, "STARTTLS")
+		Extensions = append(Extensions, "STLS")
 	}
 }
 
