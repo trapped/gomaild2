@@ -5,9 +5,9 @@ import (
 )
 
 func Process(c *Client, cmd Command) Reply {
-	res := ""
-	if c.State == Transaction {
-		res = OK
+	res := OK
+	if c.State != Transaction {
+		res = ERR
 	}
 	return Reply{
 		Result:  res,

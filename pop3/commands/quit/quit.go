@@ -14,6 +14,8 @@ func Process(c *Client, cmd Command) Reply {
 	case Transaction:
 		//TODO real transaction logic
 		c.State = Update
+		res = OK
+		msg = "server signing off (entering update state)"
 	}
 
 	return Reply{

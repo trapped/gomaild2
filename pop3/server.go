@@ -5,6 +5,7 @@ import (
 	. "github.com/trapped/gomaild2/pop3/structs"
 	. "github.com/trapped/gomaild2/structs"
 	"net"
+	"time"
 )
 
 type Server struct {
@@ -52,14 +53,39 @@ func accept(c *Client) {
 	c.State = Authorization
 	log.Info("Connected")
 
+	// anonymous struct chan for catching a returned command and error
+	// basically an adapter for Client.Receive(), used for timeouts
+	recv := make(chan struct {
+		Command
+		error
+	}, 1)
+
+cmdloop:
 	for {
 		if c.State == Disconnected {
 			break
 		}
-		cmd, err := c.Receive()
-		if err != nil {
-			break
+
+		// get the command from the user
+		go func() {
+			cmd, err := c.Receive()
+			recv <- struct {
+				Command
+				error
+			}{cmd, err}
+		}()
+
+		// if no commands sent in 10 min, kill session
+		select {
+		case r := <-recv:
+			if r.error != nil {
+				break cmdloop
+			}
+			c.Send(Process(c, r.Command))
+
+		case <-time.After(SessionTimeout):
+			c.Send(Reply{Result: ERR, Message: "session timeout"})
+			return
 		}
-		c.Send(Process(c, cmd))
 	}
 }

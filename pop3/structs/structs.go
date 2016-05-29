@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"net"
 	"strings"
+	"time"
 )
 
 const (
@@ -12,7 +13,13 @@ const (
 	TERM string = "."
 )
 
+const (
+	SessionTimeout = time.Minute * 10
+)
+
 type SessionState int
+
+var Extensions []string
 
 const (
 	Authorization SessionState = iota
@@ -75,4 +82,25 @@ func (c *Client) Set(key string, value interface{}) {
 
 func (c *Client) Get(key string) interface{} {
 	return c.Data[key]
+}
+
+func (c *Client) GetBool(key string) bool {
+	if v, ok := c.Data[key]; ok {
+		return v.(bool)
+	}
+	return false
+}
+
+func (c *Client) GetString(key string) string {
+	if v, ok := c.Data[key]; ok {
+		return v.(string)
+	}
+	return ""
+}
+
+func (c *Client) GetStringSlice(key string) []string {
+	if v, ok := c.Data[key]; ok {
+		return v.([]string)
+	}
+	return make([]string, 0)
 }

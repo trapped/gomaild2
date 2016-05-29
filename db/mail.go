@@ -146,3 +146,32 @@ func (e *Envelope) Save() error {
 		return nil
 	})
 }
+
+func Stat(username string) (int, int, error) {
+	var env Envelope
+	size := 0
+	cnt := 0
+	err := db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(username))
+		inbound := b.Bucket([]byte("inbound"))
+
+		err := inbound.ForEach(func(k, v []byte) error {
+			err := json.Unmarshal(v, &env)
+			if err != nil {
+				return err
+			}
+
+			cnt++
+			size += len(env.Body)
+
+			return nil
+		})
+
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+
+	return cnt, size, err
+}

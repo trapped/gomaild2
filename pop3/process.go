@@ -11,6 +11,8 @@ import (
 
 	"github.com/trapped/gomaild2/pop3/commands/auth"
 
+	"github.com/trapped/gomaild2/pop3/commands/capa"
+
 	"github.com/trapped/gomaild2/pop3/commands/dele"
 
 	"github.com/trapped/gomaild2/pop3/commands/list"
@@ -44,6 +46,9 @@ func Process(c *Client, cmd Command) (reply Reply) {
 
 	case "auth":
 		reply = auth.Process(c, cmd)
+
+	case "capa":
+		reply = capa.Process(c, cmd)
 
 	case "dele":
 		reply = dele.Process(c, cmd)
