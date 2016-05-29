@@ -29,6 +29,8 @@ Requires [`gengen`](https://github.com/trapped/gengen) to generate some files (`
   - [x] `CAPA`
   - [x] `QUIT`
   - [x] `RETR`
+  - [x] `STLS`
+  - [ ] `TOP`
   - [ ] `RSET`
   - [x] `STAT`
   - [x] `UIDL`
