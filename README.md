@@ -19,13 +19,14 @@ Requires [`gengen`](https://github.com/trapped/gengen) to generate some files (`
   - [x] `AUTH`
   - [x] `STARTTLS`
   - [ ] `DSN` (Delivery Status Notifications)
-- [ ] SMTP client (to send outbound emails)
+- [ ] SMTP transfer agent/client (to send outbound emails)
 - [ ] POP3 server
   - [ ] `APOP`
   - [ ] `DELE`
   - [x] `LIST`
   - [x] `NOOP`
   - [ ] `PASS`
+  - [x] `CAPA`
   - [x] `QUIT`
   - [x] `RETR`
   - [ ] `RSET`
