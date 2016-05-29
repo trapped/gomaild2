@@ -23,13 +23,13 @@ Requires [`gengen`](https://github.com/trapped/gengen) to generate some files (`
 - [ ] POP3 server
   - [ ] `APOP`
   - [ ] `DELE`
-  - [ ] `LIST`
+  - [x] `LIST`
   - [x] `NOOP`
   - [ ] `PASS`
-  - [ ] `QUIT`
-  - [ ] `RETR`
+  - [x] `QUIT`
+  - [x] `RETR`
   - [ ] `RSET`
-  - [ ] `STAT`
-  - [ ] `UIDL`
+  - [x] `STAT`
+  - [x] `UIDL`
   - [ ] `USER`
-  - [ ] `AUTH`
+  - [x] `AUTH`
