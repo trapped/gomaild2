@@ -92,7 +92,7 @@ func Process(c *Client, cmd Command) Reply {
 	log.WithField("id", c.ID).Info("Switched to TLS")
 
 	c.Data = make(map[string]interface{})
-	c.Set("tls", true)
+	c.Set("secure", true)
 	//c.State = Connected
 	c.MakeReader()
 
