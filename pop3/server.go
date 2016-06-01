@@ -48,9 +48,11 @@ func (s *Server) accept(c *Client) {
 		if r := recover(); r != nil {
 			log.Error(r)
 		}
+
 		if c.GetBool("authenticated") {
 			locker.Unlock(c.GetString("authenticated_as"))
 		}
+
 		c.Conn.Close()
 		log.Info("Disconnected")
 	}()

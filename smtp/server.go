@@ -73,40 +73,30 @@ func (s *Server) accept(c *Client) {
 		error
 	}, 1)
 
-	outbound := s.Outbound
 cmdloop:
 	for {
 		if c.State == Disconnected {
 			break
 		}
-		// only timeout on !outbound smtp clients
-		if !outbound {
-			go func() {
-				cmd, err := c.Receive()
-				recv <- struct {
-					Command
-					error
-				}{cmd, err}
-			}()
 
-			select {
-			case r := <-recv:
-				if r.error != nil {
-					break cmdloop
-				}
-				c.Send(Process(c, r.Command))
-
-			case <-time.After(s.Timeout):
-				c.Send(Reply{Result: Closing, Message: "session timeout"})
-				return
-			}
-
-		} else {
+		go func() {
 			cmd, err := c.Receive()
-			if err != nil {
-				break
+			recv <- struct {
+				Command
+				error
+			}{cmd, err}
+		}()
+
+		select {
+		case r := <-recv:
+			if r.error != nil {
+				break cmdloop
 			}
-			c.Send(Process(c, cmd))
+			c.Send(Process(c, r.Command))
+
+		case <-time.After(s.Timeout):
+			c.Send(Reply{Result: Closing, Message: "session timeout"})
+			return
 		}
 	}
 }

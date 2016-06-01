@@ -37,7 +37,7 @@ func verify(c *Client, username string, password string) Reply {
 	if pw, exists := db.Users()[username]; exists && pw == password {
 		c.Set("authenticated", true)
 		c.Set("authenticated_as", username)
-		
+
 		locker.Lock(username)
 		c.State = Transaction
 		log.WithFields(log.Fields{

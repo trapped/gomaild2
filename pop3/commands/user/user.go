@@ -25,5 +25,5 @@ func Process(c *Client, cmd Command) Reply {
 		return Reply{Result: OK, Message: user + " is a valid mailbox"}
 	}
 
-	return Reply{Result: ERR, Message: "sorry couldn't aquire mailbox for " + user}
+	return Reply{Result: ERR, Message: "couldn't aquire mailbox for " + user}
 }

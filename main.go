@@ -20,7 +20,7 @@ func initlog() {
 	}
 	log.SetOutput(io.MultiWriter(os.Stderr, logfile))
 	log.SetFormatter(&log.TextFormatter{ForceColors: false})
-	log.SetLevel(log.DebugLevel)
+	log.SetLevel(log.InfoLevel)
 }
 
 func initconfig() {
@@ -30,13 +30,15 @@ func initconfig() {
 	config.SetDefault("server.name", "localhost")
 	//smtp
 	config.SetDefault("server.smtp.mta.address", "0.0.0.0")
-	config.SetDefault("server.smtp.msa.address", "0.0.0.0")
 	config.SetDefault("server.smtp.mta.ports", []int{25})
-	config.SetDefault("server.smtp.msa.ports", []int{587})
 	config.SetDefault("server.smtp.mta.require_auth", false)
+	config.SetDefault("server.smtp.mta.outbound", false)
+	config.SetDefault("server.smtp.mta.timeout", 600)
+	config.SetDefault("server.smtp.msa.address", "0.0.0.0")
+	config.SetDefault("server.smtp.msa.ports", []int{587})
 	config.SetDefault("server.smtp.msa.require_auth", true)
-	config.SetDefault("server.smtp.msa.outbound", false)
 	config.SetDefault("server.smtp.msa.outbound", true)
+	config.SetDefault("server.smtp.msa.timeout", 600)
 	//pop3
 	config.SetDefault("server.pop3.local.address", "0.0.0.0")
 	config.SetDefault("server.pop3.local.ports", []int{101})
@@ -93,6 +95,7 @@ func main() {
 				Port:        port,
 				RequireAuth: srv.GetBool("require_auth"),
 				Outbound:    srv.GetBool("outbound"),
+				Timeout:     time.Duration(srv.GetInt("timeout")) * time.Second,
 			}
 			go smtp.Start()
 		}

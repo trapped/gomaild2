@@ -26,7 +26,7 @@ func Process(c *Client, cmd Command) Reply {
 	}
 	envs := db.List(c.GetString("authenticated_as"))
 	if cmd.Args == "" { // clawsmail says this an invalid response
-		msg := []string{"unique-id listing follows"}
+		msg := []string{"uid listing follows"}
 		for i, env := range envs {
 			msg = append(msg, fmt.Sprintf("%v %v", i, env.ID)) // shouldnt we count from 1 ?
 		}
