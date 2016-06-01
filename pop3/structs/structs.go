@@ -4,17 +4,12 @@ import (
 	"bufio"
 	"net"
 	"strings"
-	"time"
 )
 
 const (
 	OK   string = "+OK"
 	ERR  string = "-ERR"
 	TERM string = "."
-)
-
-const (
-	SessionTimeout = time.Minute * 10
 )
 
 type SessionState int

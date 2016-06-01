@@ -25,7 +25,7 @@ Requires [`gengen`](https://github.com/trapped/gengen) to generate some files (`
   - [ ] `DELE`
   - [x] `LIST`
   - [x] `NOOP`
-  - [ ] `PASS`
+  - [x] `PASS`
   - [x] `CAPA`
   - [x] `QUIT`
   - [x] `RETR`
@@ -34,5 +34,5 @@ Requires [`gengen`](https://github.com/trapped/gengen) to generate some files (`
   - [ ] `RSET`
   - [x] `STAT`
   - [x] `UIDL`
-  - [ ] `USER`
+  - [x] `USER`
   - [x] `AUTH`

@@ -35,6 +35,7 @@ type Envelope struct {
 	Recipients      []string
 	Body            string
 	Date            time.Time
+	Deleted         bool
 }
 
 func UnassignAll(tx *bolt.Tx) {

@@ -13,7 +13,8 @@ func Process(c *Client, cmd Command) Reply {
 		c.State = Disconnected
 	case Transaction:
 		//TODO real transaction logic
-		c.State = Update
+		//c.State = Update
+		c.State = Disconnected
 		res = OK
 		msg = "server signing off (entering update state)"
 	}

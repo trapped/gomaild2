@@ -8,6 +8,7 @@ server:
       address: 0.0.0.0
       ports:
         - 25
+      timeout: 600 # in seconds
     msa:
       address: 0.0.0.0
       require_auth: false
@@ -19,6 +20,7 @@ server:
       address: 127.0.0.1
       ports:
         - 110
+      timeout: 600 # in seconds
 
 transfer:
   max_tries: 3

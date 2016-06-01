@@ -9,6 +9,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	config "github.com/spf13/viper"
 	"github.com/trapped/gomaild2/db"
+	"github.com/trapped/gomaild2/pop3/locker"
 	. "github.com/trapped/gomaild2/pop3/structs"
 	. "github.com/trapped/gomaild2/structs"
 	"strings"
@@ -36,7 +37,8 @@ func verify(c *Client, username string, password string) Reply {
 	if pw, exists := db.Users()[username]; exists && pw == password {
 		c.Set("authenticated", true)
 		c.Set("authenticated_as", username)
-		//TODO: aquire lock here on db
+		
+		locker.Lock(username)
 		c.State = Transaction
 		log.WithFields(log.Fields{
 			"id":   c.ID,

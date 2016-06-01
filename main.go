@@ -10,6 +10,7 @@ import (
 	"github.com/trapped/gomaild2/smtp/transfer"
 	"io"
 	"os"
+	"time"
 )
 
 func initlog() {
@@ -36,6 +37,10 @@ func initconfig() {
 	config.SetDefault("server.smtp.msa.require_auth", true)
 	config.SetDefault("server.smtp.msa.outbound", false)
 	config.SetDefault("server.smtp.msa.outbound", true)
+	//pop3
+	config.SetDefault("server.pop3.local.address", "0.0.0.0")
+	config.SetDefault("server.pop3.local.ports", []int{101})
+	config.SetDefault("server.pop3.local.timeout", 600)
 	//password encryption
 	config.BindEnv("pw_encryption") //AES256 GCM key to decrypt passwords from config file
 	config.SetDefault("pw_encryption", "")
@@ -97,8 +102,9 @@ func main() {
 		srv := server.Sub("pop3").Sub(name)
 		for _, port := range srv.GetStringSlice("ports") {
 			pop3 := &pop3.Server{
-				Addr: srv.GetString("address"),
-				Port: port,
+				Addr:    srv.GetString("address"),
+				Port:    port,
+				Timeout: time.Duration(srv.GetInt("timeout")) * time.Second,
 			}
 			go pop3.Start()
 		}

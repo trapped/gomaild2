@@ -2,6 +2,7 @@ package pop3
 
 import (
 	log "github.com/sirupsen/logrus"
+	"github.com/trapped/gomaild2/pop3/locker"
 	. "github.com/trapped/gomaild2/pop3/structs"
 	. "github.com/trapped/gomaild2/structs"
 	"net"
@@ -9,8 +10,9 @@ import (
 )
 
 type Server struct {
-	Addr string
-	Port string
+	Addr    string
+	Port    string
+	Timeout time.Duration
 }
 
 //go:generate gengen -d ./commands/ -t process.go.tmpl -o process.go
@@ -24,6 +26,7 @@ func (s *Server) Start() {
 	if err != nil {
 		panic(err.Error())
 	}
+
 	for {
 		c, _ := l.Accept() // should handle this error
 		client := &Client{
@@ -32,11 +35,11 @@ func (s *Server) Start() {
 			ID:   SessionID(12),
 		}
 		client.MakeReader()
-		go accept(client)
+		go s.accept(client)
 	}
 }
 
-func accept(c *Client) {
+func (s *Server) accept(c *Client) {
 	log := log.WithFields(log.Fields{
 		"id":   c.ID,
 		"addr": c.Conn.RemoteAddr().String(),
@@ -44,6 +47,9 @@ func accept(c *Client) {
 	defer func() {
 		if r := recover(); r != nil {
 			log.Error(r)
+		}
+		if c.GetBool("authenticated") {
+			locker.Unlock(c.GetString("authenticated_as"))
 		}
 		c.Conn.Close()
 		log.Info("Disconnected")
@@ -63,7 +69,7 @@ func accept(c *Client) {
 cmdloop:
 	for {
 		if c.State == Disconnected {
-			break
+			return
 		}
 
 		// get the command from the user
@@ -75,7 +81,7 @@ cmdloop:
 			}{cmd, err}
 		}()
 
-		// if no commands sent in 10 min, kill session
+		// if no commands sent in x min, kill session
 		select {
 		case r := <-recv:
 			if r.error != nil {
@@ -83,7 +89,7 @@ cmdloop:
 			}
 			c.Send(Process(c, r.Command))
 
-		case <-time.After(SessionTimeout):
+		case <-time.After(s.Timeout):
 			c.Send(Reply{Result: ERR, Message: "session timeout"})
 			return
 		}
