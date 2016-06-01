@@ -79,7 +79,7 @@ func processAuth(c *Client, method string, auth string) Reply {
 		user, pass = string(username_b), string(password_b)
 	case "CRAM-MD5":
 		challenge := fmt.Sprintf("<%v.%v.%v@%v>", c.ID, SessionID(6), SessionID(6), config.GetString("server.name"))
-		c.Send(Reply{Result: OK, Message: base64.StdEncoding.EncodeToString([]byte(challenge))})
+		c.Send(Reply{Result: "+", Message: base64.StdEncoding.EncodeToString([]byte(challenge))})
 		auth_c, _ := c.Receive()
 		digest, _ := base64.StdEncoding.DecodeString(auth_c.Verb)
 		digest_split := strings.Split(string(digest), " ")
