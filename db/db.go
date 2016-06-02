@@ -20,7 +20,7 @@ func Users() map[string]string {
 	for domain, _ := range config.GetStringMap("domains") {
 		for _, userstring := range config.Sub("domains").Sub(domain).GetStringSlice("users") {
 			us_split := strings.Split(userstring, "@")
-			username, password := us_split[0], decryptPassword(us_split[1])
+			username, password := us_split[0], decryptPassword(strings.Join(us_split[1:], "@"))
 			users[username+"@"+domain] = password
 		}
 	}
