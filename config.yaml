@@ -15,6 +15,7 @@ server:
       outbound: true
       ports:
         - 587
+      timeout: 600
   pop3:
     local:
       address: 0.0.0.0
@@ -26,6 +27,7 @@ transfer:
   max_tries: 3
   worker_count: 1
   allow_insecure: true
+  allow_unencrypted: true
 
 domains:
   test.pellero.it:

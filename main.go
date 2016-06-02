@@ -56,6 +56,7 @@ func initconfig() {
 	//transfer
 	config.SetDefault("transfer.max_tries", 3)
 	config.SetDefault("transfer.worker_count", 1)
+	config.SetDefault("transfer.allow_unencrypted", true)
 	config.SetDefault("transfer.allow_insecure", true)
 	//meta
 	config.SetDefault("config.loaded", false)

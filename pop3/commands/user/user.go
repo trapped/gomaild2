@@ -12,13 +12,13 @@ import (
 // may only be given in the AUTHORIZATION state after the POP3
 // greeting or after an unsuccessful USER or PASS command
 func Process(c *Client, cmd Command) Reply {
-
 	if c.State != Authorization {
 		return Reply{Result: ERR, Message: "invalid state"}
 	}
 	if c.GetBool("authenticated") {
 		return Reply{Result: ERR, Message: "already authenticated"}
 	}
+
 	user := cmd.Args
 	if _, exists := db.Users()[user]; exists {
 		c.Set("last_command", "USER:"+user)
