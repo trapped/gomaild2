@@ -104,13 +104,23 @@ func worker() {
 				"domain":     domain,
 				"recipients": recipients,
 			})
-			mxs, err := net.LookupMX(domain)
-			if err != nil {
-				log_ed.WithField("err", err).Error("Couldn't lookup MX")
-				//send warning to sender
+			var err error
+			var mxs []*net.MX
+			delivered := false
+			for tries := 0; tries < config.GetInt("transfer.max_tries"); tries++ {
+				mxs, err = net.LookupMX(domain)
+				if err != nil {
+					log_ed.WithField("err", err).Error("Couldn't lookup MX")
+					//send warning to sender
+					continue
+				}
+				break
+			}
+			if len(mxs) == 0 {
+				//couldn't lookup MX
+				log_ed.Error("Max MX lookup tries reached")
 				continue
 			}
-			delivered := false
 			for i := 0; i < len(mxs); i++ {
 				host := mxs[i].Host
 				log_edh := log_ed.WithField("host", host)
@@ -122,6 +132,7 @@ func worker() {
 						log_edh.WithField("err", err).Error("Connection failed")
 						client = nil
 						//couldn't connect to this host, try again
+						time.Sleep(5 * time.Second)
 						continue
 					}
 					break

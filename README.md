@@ -13,7 +13,7 @@ With `gomaild2` you can:
 - setup a catch-all email server for verifying throwaway accounts
 - easily backup the database
 
-##Setting up a standard email server
+##Setting up
 Most people only need to receive and send simple email, so we'll go over how to set `gomaild2` up for that.
 
 ###Building

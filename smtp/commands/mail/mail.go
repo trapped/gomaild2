@@ -4,32 +4,18 @@ import (
 	"errors"
 	. "github.com/trapped/gomaild2/smtp/structs"
 	"regexp"
-	"strings"
 )
 
 var (
-	rxExtractAddr *regexp.Regexp = regexp.MustCompile("(?i)^FROM:<(.*)>$")
+	rxExtractAddr *regexp.Regexp = regexp.MustCompile("(?i)^FROM:( )*<(.*)>(.*)$")
 )
 
 func parseFrom(args string) (string, error) {
-	split := strings.Split(args, " ")
-	if len(split) < 1 {
-		return "", errors.New("syntax error in command arguments")
-	}
-	//cleanup args
-	for i := 0; i < len(split); i++ {
-		split[i] = strings.TrimSpace(split[i])
-		if split[i] == "" {
-			split = append(split[:i], split[i+1:]...)
-			i--
-		}
-	}
-
-	if !rxExtractAddr.MatchString(split[0]) {
+	if !rxExtractAddr.MatchString(args) {
 		return "", errors.New("syntax error in command arguments")
 	}
 
-	addr := rxExtractAddr.FindStringSubmatch(split[0])[1]
+	addr := rxExtractAddr.FindStringSubmatch(args)[2]
 	if !RxEmailAddress.MatchString(addr) {
 		return "", errors.New("invalid address")
 	}
