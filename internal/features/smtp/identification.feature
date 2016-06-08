@@ -14,3 +14,4 @@ Feature: Identification
       | "."           | 501  |
       | "aaaa"        | 501  |
       | "example.com" | 250  |
+      | ""            | 501  |

@@ -44,7 +44,7 @@ func init() {
 		World = nil
 	})
 
-	Given(`^a server is listening on "(.+)"$`, func(addr string) {
+	Given(`^a server is listening on "(.*)"$`, func(addr string) {
 		s := strings.Split(addr, ":")
 		World["server"] = &Server{
 			Addr:    s[0],
@@ -57,12 +57,12 @@ func init() {
 		}
 	})
 
-	Given(`^a client is connected to "(.+)"$`, func(addr string) {
+	Given(`^a client is connected to "(.*)"$`, func(addr string) {
 		createClient(addr)
 		clientExpectReceive("220")
 	})
 
-	When(`^a client connects to "(.+)"$`, func(addr string) {
+	When(`^a client connects to "(.*)"$`, func(addr string) {
 		createClient(addr)
 	})
 
@@ -70,7 +70,7 @@ func init() {
 		clientExpectReceive(code)
 	})
 
-	When(`^the client sends a "(.+)" command with args "(.+)"$`, func(verb, args string) {
+	When(`^the client sends a "(.*)" command with args "(.*)"$`, func(verb, args string) {
 		World["client"].(*Client).SendCmd(Command{
 			Verb: verb,
 			Args: args,
