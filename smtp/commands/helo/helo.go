@@ -10,7 +10,7 @@ func trimBrackets(s string) string {
 }
 
 func Identify(c *Client, cmd Command) Reply {
-	valid := RxDomain.MatchString(cmd.Args) || RxIP.MatchString(trimBrackets(cmd.Args))
+	valid := RxDomain.MatchString(cmd.Args) || RxIP.MatchString(trimBrackets(cmd.Args)) || cmd.Args == "localhost"
 	//TODO: start blacklist check
 	if valid {
 		c.Set("identifier", cmd.Args)

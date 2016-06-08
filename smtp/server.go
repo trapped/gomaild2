@@ -15,40 +15,62 @@ type Server struct {
 	RequireAuth bool
 	Outbound    bool
 	Timeout     time.Duration
+	Stop        chan bool
 }
 
 //go:generate gengen -d ./commands/ -t process.go.tmpl -o process.go
 
-func (s *Server) Start() {
+func (s *Server) MakeClient(c net.Conn) *Client {
+	client := &Client{
+		Conn: c,
+		Data: make(map[string]interface{}),
+		ID:   SessionID(12),
+	}
+	client.MakeReader()
+	client.Set("outbound", s.Outbound)
+	client.Set("require_auth", s.RequireAuth)
+	client.SaveData()
+	return client
+}
+
+func (s *Server) Start() error {
 	log.WithFields(log.Fields{
 		"addr":         s.Addr,
 		"port":         s.Port,
 		"outbound":     s.Outbound,
 		"require_auth": s.RequireAuth,
 	}).Info("Starting SMTP server")
-	l, err := net.Listen("tcp", s.Addr+":"+s.Port)
+	addr, err := net.ResolveTCPAddr("tcp", s.Addr+":"+s.Port)
 	if err != nil {
-		panic(err.Error())
+		log.Errorf("Failed to resolve listen address '%s': %v", s.Addr+":"+s.Port, err)
+		return err
+	}
+	l, err := net.ListenTCP("tcp", addr)
+	if err != nil {
+		log.Errorf("Failed to listen on address '%s': %v", s.Addr+":"+s.Port, err)
+		return err
 	}
 
-	// set a timeout for the inbound server
-	if !s.Outbound {
-		s.Timeout = time.Duration(config.GetInt("server.smtp.mta.timeout")) * time.Second
-	}
-
-	for {
-		c, _ := l.Accept()
-		client := &Client{
-			Conn: c,
-			Data: make(map[string]interface{}),
-			ID:   SessionID(12),
+	s.Stop = make(chan bool)
+	go func() {
+		for {
+			select {
+			case <-s.Stop:
+				log.Info("Stopping SMTP server...")
+				l.Close()
+				return
+			default:
+			}
+			//prepare async accept()
+			l.SetDeadline(time.Now().Add(100 * time.Millisecond))
+			c, err := l.Accept()
+			if err == nil {
+				client := s.MakeClient(c)
+				go s.accept(client)
+			}
 		}
-		client.MakeReader()
-		client.Set("outbound", s.Outbound)
-		client.Set("require_auth", s.RequireAuth)
-		client.SaveData()
-		go s.accept(client)
-	}
+	}()
+	return nil
 }
 
 func (s *Server) accept(c *Client) {

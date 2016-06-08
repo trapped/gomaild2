@@ -71,6 +71,16 @@ type Client struct {
 	default_data map[string]interface{}
 }
 
+func (c *Client) Connect(addr string) error {
+	conn, err := net.Dial("tcp", addr)
+	if err != nil {
+		return err
+	}
+	c.Conn = conn
+	c.MakeReader()
+	return nil
+}
+
 func (c *Client) MakeReader() {
 	c.Rdr = bufio.NewReadWriter(bufio.NewReader(c.Conn), bufio.NewWriter(c.Conn))
 }
@@ -136,6 +146,19 @@ func FormatReply(r Reply) string {
 func LastLine(r Reply) string {
 	s := strings.Split(r.Message, "\n")
 	return strings.TrimSpace(s[len(s)-1])
+}
+
+func (c *Client) SendCmd(cmd Command) {
+	msg := cmd.Verb
+	if len(cmd.Args) > 0 {
+		msg += " " + cmd.Args
+	}
+	_, err := c.Rdr.WriteString(msg + "\r\n")
+	c.Rdr.Flush()
+	if err != nil {
+		c.Conn.Close()
+		c.State = Disconnected
+	}
 }
 
 func (c *Client) Send(r Reply) {
