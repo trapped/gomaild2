@@ -1,6 +1,10 @@
 .PHONY: generate all
 
-all: generate build
+all: build test
+
+deps:
+	go get github.com/trapped/gengen
+	go get ./...
 
 generate:
 	go generate smtp/*.go
@@ -8,5 +12,8 @@ generate:
 	go fmt smtp/process.go
 	go fmt pop3/process.go
 
-build:
+build: generate
 	go build
+
+test: generate
+	gucumber
