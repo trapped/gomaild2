@@ -4,6 +4,7 @@ all: build test
 
 deps:
 	go get github.com/trapped/gengen
+	go get github.com/lsegal/gucumber/cmd/gucumber
 	go get ./...
 
 generate:
