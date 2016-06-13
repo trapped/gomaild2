@@ -17,7 +17,7 @@ func Process(c *Client, cmd Command) Reply {
 			Message: "invalid state",
 		}
 	}
-	envs := db.List(c.GetString("authenticated_as"))
+	envs := db.List(c.GetString("authenticated_as"), false)
 	if cmd.Args != "" {
 		for i, env := range envs {
 			if strconv.Itoa(i) == cmd.Args {

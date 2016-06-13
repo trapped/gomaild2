@@ -101,3 +101,12 @@ func (c *Client) GetStringSlice(key string) []string {
 	}
 	return make([]string, 0)
 }
+
+func (c *Client) IsDeleted(id string) bool {
+	for _, m := range c.GetStringSlice("deleted") {
+		if m == id {
+			return true
+		}
+	}
+	return false
+}

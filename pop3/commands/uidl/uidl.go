@@ -24,7 +24,7 @@ func Process(c *Client, cmd Command) Reply {
 			Message: "invalid state",
 		}
 	}
-	envs := db.List(c.GetString("authenticated_as"))
+	envs := db.List(c.GetString("authenticated_as"), false)
 	if cmd.Args == "" { // clawsmail says this an invalid response
 		msg := []string{"uid listing follows"}
 		for i, env := range envs {

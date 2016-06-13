@@ -254,8 +254,10 @@ func Stat(username string) (int, int) {
 				log.Error(err)
 				return nil
 			}
-			cnt++
-			size += len(env.Body)
+			if !env.Deleted {
+				cnt++
+				size += len(env.Body)
+			}
 			return nil
 		})
 		if err != nil {
@@ -267,7 +269,7 @@ func Stat(username string) (int, int) {
 	return cnt, size
 }
 
-func List(username string) []*Envelope {
+func List(username string, showDeleted bool) []*Envelope {
 	envs := make([]*Envelope, 0)
 	db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(username))
@@ -279,7 +281,11 @@ func List(username string) []*Envelope {
 				log.Error(err)
 				return nil
 			}
-			envs = append(envs, env)
+			if !env.Deleted {
+				envs = append(envs, env)
+			} else if env.Deleted && showDeleted {
+				envs = append(envs, env)
+			}
 			return nil
 		})
 		return nil
