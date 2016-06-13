@@ -184,7 +184,7 @@ $ rm gomaild2.db
 - [x] SMTP transfer agent/client (to send outbound email)
 - [ ] POP3 server
   - [ ] `APOP`
-  - [ ] `DELE`
+  - [x] `DELE`
   - [x] `LIST`
   - [x] `NOOP`
   - [x] `PASS`
@@ -193,7 +193,7 @@ $ rm gomaild2.db
   - [x] `RETR`
   - [x] `STLS`
   - [ ] `TOP`
-  - [ ] `RSET`
+  - [x] `RSET`
   - [x] `STAT`
   - [x] `UIDL`
   - [x] `USER`
