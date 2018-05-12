@@ -4,7 +4,7 @@ Hopefully the successor to [`gomaild`](https://github.com/trapped/gomaild).
 
 Requires [`gengen`](https://github.com/trapped/gengen) to generate some files (`go get github.com/trapped/gengen`).
 
-##What can it do?
+## What can it do?
 With `gomaild2` you can:
 
 - send and receive email to/from most other mail servers/service providers
@@ -13,10 +13,10 @@ With `gomaild2` you can:
 - setup a catch-all email server for verifying throwaway accounts
 - easily backup the database
 
-##Setting up
+## Setting up
 Most people only need to receive and send simple email, so we'll go over how to set `gomaild2` up for that.
 
-###Building
+### Building
 Right now the only way to get `gomaild2` is to build from source (but we plan to change that in the near future).
 To do that, you're gonna need the latest version of the Go programming language and set it up. I'm going to assume you can search yourself how to do that.
 
@@ -31,7 +31,7 @@ $ cd $GOPATH/src/github.com/trapped/gomaild2
 $ go install
 ```
 
-###Preparing the configuration file
+### Preparing the configuration file
 Great, so now you have a working `gomaild2` binary. What now? Well, you obviously need a configuration file.
 We provide a "default" one, which should be fine for most purposes, but it's mostly a placeholder, so we'll go over creating a config file from scratch. You can start by creating a `config.yaml` file in your home directory:
 
@@ -40,7 +40,7 @@ $ cd
 $ touch config.yaml
 ```
 
-####The boring stuff
+#### The boring stuff
 First off you need to setup things like logging and server settings. Copy-paste this into the config file and leave everything as-is except the server name (unless you know what you're doing):
 
 ```yaml
@@ -74,7 +74,7 @@ A little note about `server.name`: it should be the domain name that points to t
 
 Say for example you had a VPS, and say you set up `mail.foobar.com` to point to its IP. Then `server.name` should be `mail.foobar.com`, although usually you can also just use `foobar.com`.
 
-####The transfer agent
+#### The transfer agent
 The transfer agent (and its workers) is the small piece of code that takes the email you send and makes sure they arrive at destination. You can tweak a couple settings:
 
 ```yaml
@@ -93,7 +93,7 @@ When `allow_unencrypted` is set to false, workers will refuse to transfer your e
 
 `allow_insecure` makes workers accept to transfer your email to servers that don't have a 'valid' SSL/TLS certificate, such as those using a self-signed one.
 
-####The database
+#### The database
 ```yaml
 db:
   save_all_mail: false
@@ -104,7 +104,7 @@ db:
 
 `path` is the place where the database file is. You might find it useful when backing it up.
 
-####Encryption and accounts
+#### Encryption and accounts
 It is never a good idea to let strangers read what you write. Hence why you can encrypt your email while in transit, as well as the credentials for your email accounts!
 
 To encrypt credentials, first you need an AES256 key, which is any kind of data that is 32 bytes long (for example `123456789012345678901234567890ab`). After you have one, encode it to base64 (`echo -n "123456789012345678901234567890ab" | openssl base64`) and set the `PW_ENCRYPTION` environment variable to it, then actually encrypt your password (`echo -n "YOUR PASSWORD HERE" | openssl aes-256-cbc -a` then type the original non-base64 password) and set the base64-encoded result in the config file.
@@ -128,7 +128,7 @@ tls:
   key: /certificates/YOUR DOMAIN.key
 ```
 
-###Running the email server
+### Running the email server
 It would be a good idea to have a so-called supervisor 'babysit' `gomaild2` and restart it in case of crashes, as well as alert you if something goes wrong.
 The easy (and dangerous!) way, though, is to simply run it while into the folder containing the configuration file: `$GOPATH/bin/gomaild2`
 
@@ -145,14 +145,14 @@ You'll see log lines again, but this time you can press `CTRL + A + D` to detach
 
 To stop it, kill it like you would with any other program: `CTRL + C` (or `pkill`, etc...).
 
-###Setting up Thunderbird
+### Setting up Thunderbird
 This is the easy part, since Thunderbird has a great automatic wizard that does most of the work for you; however:
 
 - when asked to input any kind of USERNAME, use the WHOLE email address (`user@domain.com`, NOT `user`)
 - if you didn't enable/setup SSL/TLS encryption, disable it in Thunderbird too
 - when asked about what port to connect to, use `110` for POP3 and `587` for SMTP (unless you changed them)
 
-###Backing up and resetting the database
+### Backing up and resetting the database
 `gomaild2` uses [`boltdb`](https://github.com/boltdb/bolt) as the underlying database, which means that backing up is as simple as copying the database file itself (PROVIDED THE SERVER IS NOT RUNNING):
 
 ```bash
@@ -165,7 +165,7 @@ To reset the database just delete the file (PROVIDED THE SERVER IS NOT RUNNING):
 $ rm gomaild2.db
 ```
 
-##Status
+## Status
 
 - [x] DB interface to actually store email
 - [x] YAML config
